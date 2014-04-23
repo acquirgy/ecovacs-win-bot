@@ -604,7 +604,7 @@ font-size: 70%;
 	display:inline-block;
 	vertical-align:top;
 	width:200px;
-	padding:8px  12px 11px 17px;
+	padding:8px  12px 11px 12px;
 	margin:0 15px 4px 0;
 	background:#fff;
 	border:1px solid #8b6b3f;
@@ -620,10 +620,9 @@ font-size: 70%;
 }
 .section .columns .col .holder{
 	float:right;
-	width:95px;
 }
 .section .columns h2{
-	width:170px;
+	width:176px;
 	margin:0 0 18px -76px;
 	text-align:left;
 	font:bold 12px/14px Tahoma, Arial, sans-serif;

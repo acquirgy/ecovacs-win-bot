@@ -25,6 +25,13 @@ class Main extends MY_Controller {
 
     $this->view = false;
 
+    if ($this->input->post('Country') == 'United States') {$billingState = $this->input->post('b_state');}
+    if ($this->input->post('Country') == 'Canada') {$billingState= $this->input->post('b_province');}
+    if ($this->input->post('Country') == 'Puerto Rico') {$billingState= $this->input->post('b_region');}
+    if ($this->input->post('s_country') == 'United States') {$ShippingState = $this->input->post('s_state');}
+    if ($this->input->post('s_country') == 'Canada') {$ShippingState= $this->input->post('s_province');}
+    if ($this->input->post('s_country') == 'Puerto Rico') {$ShippingState= $this->input->post('s_region');}
+
     // Lets create our order
     $order = array(
       'email' => $this->input->post('email'),
@@ -36,7 +43,7 @@ class Main extends MY_Controller {
       'b_address' => $this->input->post('b_address'),
       'b_apt' => $this->input->post('b_apt'),
       'b_city' => $this->input->post('b_city'),
-      'b_state' => $this->input->post('b_state'),
+      'b_state' => $billingState,
       'b_zip' => $this->input->post('b_zip'),
       'b_country' => $this->input->post('Country'),
       's_first_name' => $this->input->post('s_first_name'),
@@ -44,7 +51,7 @@ class Main extends MY_Controller {
       's_address' => $this->input->post('s_address'),
       's_apt' => $this->input->post('s_apt'),
       's_city' => $this->input->post('s_city'),
-      's_state' => $this->input->post('s_state'),
+      's_state' => $ShippingState,
       's_zip' => $this->input->post('s_zip'),
       's_country' => $this->input->post('s_country'),
       'payment_type' => $this->input->post('cardType'),
@@ -135,7 +142,7 @@ class Main extends MY_Controller {
   , orders.b_country AS 'BillingCountry'
   , orders.phone AS 'Phone'
   , orders.email AS 'Email'
-  , '' AS 'PaymentMethod'
+  , orders.payment_type AS 'PaymentMethod'
   , '' AS 'CreditCardNumber'
   , '' AS 'ExpDate'
   , '' AS 'CVV2'
@@ -148,7 +155,7 @@ class Main extends MY_Controller {
   , CASE
     WHEN orders.shipping_type = 'Rush' THEN 'UP2'
     WHEN orders.s_country = 'Canada' THEN 'UP9'
-    WHEN orders.s_country = 'Puerto Rico' OR orders.s_state = 'AK' OR orders.s_state = 'HI' THEN 'UP9'
+    WHEN orders.s_country = 'Puerto Rico' OR orders.s_state = 'AK' OR orders.s_state = 'HI' THEN 'UPC'
     ELSE ''
     END AS 'Special Ship Method'
   , orders.s_first_name AS 'Shipping FirstName'
@@ -179,9 +186,9 @@ class Main extends MY_Controller {
   , ol4.product_sku AS 'PROD4'
   , ol4.product_price AS 'EXT4'
   , orders.shipping_total AS 'SH4'
-  , ol4.qty AS 'QTY5'
-  , ol4.product_sku AS 'PROD5'
-  , ol4.product_price AS 'EXT5'
+  , ol5.qty AS 'QTY5'
+  , ol5.product_sku AS 'PROD5'
+  , ol5.product_price AS 'EXT5'
   , orders.shipping_total AS 'SH5'
 FROM
     orders
