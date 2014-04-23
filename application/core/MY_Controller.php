@@ -78,16 +78,188 @@ class MY_Controller extends CI_Controller
         // Stop writing to session if is ajax request
         if(is_ajax()) session_write_close();
 
-        // Load site settings
-        //$this->settings = $this->setting_model->get_all_keyed();
-
         // Store src if set in the query string
         if($this->input->get('src')) $this->session->set_userdata('src', $this->input->get('src'));
         if($this->input->get('SRC')) $this->session->set_userdata('src', $this->input->get('SRC'));
 
+        if(!$this->input->is_cli_request()) {
+
+            // Deal with admin side
+            if ($this->uri->segment(1) == 'admin') {
+
+                // User is not authenticated, but is trying to login
+                if ($this->uri->segment(2) == 'authentication') {
+
+                    $this->layout = 'layouts/admin';
+
+                } else if ($this->session->userdata('user_id') || !isset($_SERVER['SERVER_NAME']) || !isset($_SERVER['REQUEST_METHOD'])) {
+
+                    // User is authenticated
+                    $this->authenticated_user = $this->user_model->get($this->session->userdata('user_id'));
+
+                    // Make sure this user has the admin role
+                    if($this->authenticated_user['role'] != 'admin') {
+                        $this->session->set_flashdata('error','You are not authenticated to view this page.');
+                        redirect('/admin/authentication/login');
+                    }
+
+                    $this->layout = 'layouts/admin';
+
+                } else {
+
+                    $this->session->unset_userdata();
+                    $this->session->set_flashdata('error','You are not authenticated to view this page.');
+                    redirect('/admin/authentication/login');
+
+                }
+
+            }
+
+            // Deal with client portal
+            if ($this->uri->segment(1) == 'client') {
+
+                if ($this->session->userdata('user_id') || !isset($_SERVER['SERVER_NAME']) || !isset($_SERVER['REQUEST_METHOD'])) {
+
+                    // User is authenticated
+                    $this->authenticated_user = $this->user_model->get($this->session->userdata('user_id'));
+                    $this->layout = 'layouts/client';
+
+                } else if ($this->uri->segment(2) == 'authentication') {
+
+                    // User is not authenticated, but is trying to login
+                    $this->layout = 'layouts/client';
+
+                } else {
+
+                    $this->session->unset_userdata();
+                    $this->session->set_flashdata('error','You are not authenticated to view this page.');
+                    redirect('/client/authentication/login');
+
+                }
+
+            }
+
+        }
+
     }
 
+    /* --------------------------------------------------------------
+     * VIEW RENDERING
+     * ------------------------------------------------------------ */
 
+    /**
+     * Override CodeIgniter's despatch mechanism and route the request
+     * through to the appropriate action. Support custom 404 methods and
+     * autoload the view into the layout.
+     */
+    public function _remap($method)
+    {
+        if (method_exists($this, $method))
+        {
+            call_user_func_array(array($this, $method), array_slice($this->uri->rsegments, 2));
+        }
+        else
+        {
+            if (method_exists($this, '_404'))
+            {
+                call_user_func_array(array($this, '_404'), array($method));
+            }
+            else
+            {
+                show_404(strtolower(get_class($this)).'/'.$method);
+            }
+        }
+
+        $this->_load_view();
+    }
+
+    /**
+     * Automatically load the view, allowing the developer to override if
+     * he or she wishes, otherwise being conventional.
+     */
+    protected function _load_view()
+    {
+        // If $this->view == FALSE, we don't want to load anything
+        if ($this->view !== FALSE)
+        {
+            // If $this->view isn't empty, load it. If it isn't, try and guess based on the controller and action name
+            $view = (!empty($this->view)) ? $this->view : $this->router->directory . $this->router->class . '/' . $this->router->method;
+
+            if(!empty($this->view)) {
+                $view = $this->view;
+            } else if($this->uri->segment(1) == 'admin' || $this->uri->segment(1) == 'client') {
+                $view = $this->router->directory . $this->router->class . '/' . $this->router->method;
+            } else {
+                $view = 'front/' . $this->router->directory . $this->router->class . '/' . $this->router->method;
+            }
+
+            // Load the view into $yield
+            $data['yield'] = $this->load->view($view, $this->data, TRUE);
+
+            // Do we have any asides? Load them.
+            if (!empty($this->asides))
+            {
+                foreach ($this->asides as $name => $file)
+                {
+                    $data['yield_'.$name] = $this->load->view($file, $this->data, TRUE);
+                }
+            }
+
+            // Load in our existing data with the asides and view
+            $data = array_merge($this->data, $data);
+            $layout = FALSE;
+
+            // Set Javascripts && CSS
+            $section = ($this->uri->segment(1) != 'admin' && $this->uri->segment(1) != 'client') ? 'front' : $this->uri->segment(1);
+
+            $javascript = $section . '/' . $this->router->class . '/' . $this->router->method . '.js';
+            if (file_exists('assets/javascripts/' . $javascript))
+                $this->javascripts[] = $javascript;
+
+            $stylesheet = $section . '/' . $this->router->class . '/' . $this->router->method . '.css';
+            if (file_exists('assets/stylesheets/' . $stylesheet))
+                $this->stylesheets[] = $stylesheet;
+
+            $data['stylesheets'] = $data['javascripts'] = '';
+
+            foreach($this->stylesheets as $stylesheet) {
+                $data['stylesheets'] = '<link rel="stylesheet" href="/assets/stylesheets/' . $stylesheet . '">';
+            }
+            foreach($this->javascripts as $javascript) {
+                $data['javascripts'] = '<script type="text/javascript" src="/assets/javascripts/' . $javascript . '"></script>';
+            }
+            // If we didn't specify the layout, try to guess it
+            if (!isset($this->layout))
+            {
+                if (file_exists(APPPATH . 'views/layouts/' . $this->router->class . '.php'))
+                {
+                    $layout = 'layouts/' . $this->router->class;
+                }
+                else
+                {
+                    $layout = 'layouts/application';
+                }
+            }
+
+            // If we did, use it
+            else if ($this->layout !== FALSE)
+            {
+                $layout = $this->layout;
+            }
+
+            // If $layout is FALSE, we're not interested in loading a layout, so output the view directly
+            if ($layout == FALSE)
+            {
+                $this->output->set_output($data['yield']);
+            }
+
+            // Otherwise? Load away :)
+            else
+            {
+                $this->load->view($layout, $data);
+            }
+        }
+    }
 
     /* --------------------------------------------------------------
      * MODEL LOADING

@@ -52,7 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('database','session','bcrypt', 'email', 'cart');
+$autoload['libraries'] = array('database','session','bcrypt', 'email', 'AppEmail');
 
 
 /*
@@ -109,7 +109,7 @@ $autoload['language'] = array();
 |
 */
 
-$autoload['model'] = array('product_model');
+$autoload['model'] = array('product_model', 'order_model', 'order_line_model');
 
 
 /* End of file autoload.php */

@@ -95,6 +95,7 @@ function states() {
   $states = array(
           '' => 'Select',
           'AL' => 'Alabama',
+          'AK' => 'Alaska',
           'AZ' => 'Arizona',
           'AR' => 'Arkansas',
           'CA' => 'California',
@@ -104,6 +105,7 @@ function states() {
           'DC' => 'District of Columbia',
           'FL' => 'Florida',
           'GA' => 'Georgia',
+          'HI' => 'Hawaii',
           'ID' => 'Idaho',
           'IL' => 'Illinois',
           'IN' => 'Indiana',
@@ -145,6 +147,26 @@ function states() {
           'WY' => 'Wyoming'
   );
   return $states;
+}
+
+function provinces() {
+  $provinces = array(
+          "" => "Select",
+          "AB" => "Alberta",
+          "BC" => "British Columbia",
+          "MB" => "Manitoba",
+          "NB" => "New Brunswick",
+          "NL" => "Newfoundland and Labrador",
+          "NT" => "Northwest Territories",
+          "NS" => "Nova Scotia",
+          "NU" => "Nunavut",
+          "ON" => "Ontario",
+          "PE" => "Prince Edward Island",
+          "QC" => "Quebec",
+          "SK" => "Saskatchewan",
+          "YT" => "Yukon"
+  );
+  return $provinces;
 }
 
 function job_methods() {

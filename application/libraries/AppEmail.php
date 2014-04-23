@@ -20,7 +20,7 @@ class AppEmail extends MY_Controller {
     $this->mail->SMTPSecure = 'tls';
     $this->mail->SMTPKeepAlive = true;
     $this->mail->Timeout = 5;
-    //$this->mail->SMTPDebug  = 2;
+    $this->mail->SMTPDebug  = 0;
 
     $this->config = array(
       'mailtype' => 'html',
@@ -38,11 +38,11 @@ class AppEmail extends MY_Controller {
 
   public function system($message) {
     $this->mail->clearAddresses();
-    $this->mail->addAddress('roeland@bythepixel.com');
-    $this->mail->Username = 'KitchenAidReporting@acquirgy.com';
-    $this->mail->Password = 'KA_Pass1!';
-    $this->mail->From = 'KitchenAidReporting@acquirgy.com';
-    $this->mail->FromName = 'KitchenAid Reporting';
+    $this->mail->addAddress('crubin@acquirgy.com');
+    $this->mail->Username = 'customerservice@winbot7.com';
+    $this->mail->Password = 'th4$M14kk!';
+    $this->mail->From = 'customerservice@winbot7.com';
+    $this->mail->FromName = 'WINBOT TV Offer';
     $this->mail->Subject = 'SYSTEM ERROR ' .  base_url();
     $message .= '<br /><br /><hr /><br />SERVER:<br /><pre>' . print_r($_SERVER,true);
     $message .= '<br /><br /><hr /><br />POST:<br /><pre>' . print_r($_POST,true);
@@ -53,35 +53,30 @@ class AppEmail extends MY_Controller {
 
   public function customer($params) {
     $this->mail->clearAddresses();
-    $params['data']['view'] = $params['view'];
-    $this->mail->Username = 'KitchenaidTV@Kitchenaidtvoffer.com';
-    $this->mail->Password = 'Kitchenaid0!';
+    $this->mail->Username = 'customerservice@winbot7.com';
+    $this->mail->Password = 'th4$M14kk!';
     $this->mail->addAddress($params['to']);
-    //$this->mail->addBCC('roeland@bythepixel.com');
-    $this->mail->addBCC('emailnotification@Kitchenaidtvoffer.com');
-    $this->mail->From = 'KitchenAidTV@KitchenAidTVOffer.com';
-    $this->mail->FromName = 'KitchenAid TV Offer';
+    $this->mail->From = 'customerservice@winbot7.com';
+    $this->mail->FromName = 'WINBOT TV Offer';
     $this->mail->Subject = $params['subject'];
-    $this->mail->Body = $this->ci->load->view('layouts/notification.php', $params['data'], TRUE);
-    if($this->ci->settings['customer_email']) {
-      $this->mail->send();
-    }
+    $this->mail->Body = $this->ci->load->view('front/main/confirmation_email', $params['data'], TRUE);
+    $this->mail->send();
   }
 
-  public function admin($params) {
-    $this->mail->clearAddresses();
-    $this->mail->addAddress('opsnotification@acquirgy.com');
-    $this->mail->addAddress('roeland@bythepixel.com');
-    $this->mail->Username = 'KitchenAidReporting@acquirgy.com';
-    $this->mail->Password = 'KA_Pass1!';
-    $this->mail->From = 'KitchenAidReporting@acquirgy.com';
-    $this->mail->FromName = 'KitchenAid Reporting';
-    $this->mail->Subject = $params['subject'];
-    $params['view'] = isset($params['view']) ? $params['view'] : 'notification_admin';
-    $this->mail->Body = $this->ci->load->view('admin/email/' . $params['view'], $params['data'], TRUE);
-    if($this->ci->settings['admin_email']) {
-      $this->mail->send();
-    }
-  }
+  // public function admin($params) {
+  //   $this->mail->clearAddresses();
+  //   $this->mail->addAddress('opsnotification@acquirgy.com');
+  //   $this->mail->addAddress('roeland@bythepixel.com');
+  //   $this->mail->Username = 'KitchenAidReporting@acquirgy.com';
+  //   $this->mail->Password = 'KA_Pass1!';
+  //   $this->mail->From = 'KitchenAidReporting@acquirgy.com';
+  //   $this->mail->FromName = 'KitchenAid Reporting';
+  //   $this->mail->Subject = $params['subject'];
+  //   $params['view'] = isset($params['view']) ? $params['view'] : 'notification_admin';
+  //   $this->mail->Body = $this->ci->load->view('admin/email/' . $params['view'], $params['data'], TRUE);
+  //   if($this->ci->settings['admin_email']) {
+  //     $this->mail->send();
+  //   }
+  // }
 
 }

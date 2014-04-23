@@ -76,7 +76,7 @@
 	right: -13px;
 	width: 43px;
 	height: 43px;
-	background:url(../images/fancybox/fancy_close.png) no-repeat;
+	background:url(/assets/images/fancybox/fancy_close.png) no-repeat;
 	cursor: pointer;
 	z-index: 1103;
 	display: none;

@@ -1,33 +1,4 @@
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-    <meta name="description" content=" I just got my WINBOT™ Window Cleaning Robot – Check it out!"/>
-    <meta property="og:title" content=" WINBOT™ The Revolutionary Window Washing Robot" />
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content="https://www.Winbot7.com/" />
-    <meta property="og:description" content="I just got my WINBOT™ Window Cleaning Robot – Check it out!"/>
-    <meta property="og:image" content="https://www.Winbot7.com/images/winbot-Pin.jpg" />
-    <meta property="og:site_name" content="Winbot™ Window Washing Robot" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>EcovacsWinBot</title>
-    <link href="/assets/stylesheets/shared/normalize.css" rel="stylesheet" type="text/css" />
-    <link media="all" rel="stylesheet" href="/assets/stylesheets/front/main.css">
-    <link media="all" rel="stylesheet" href="/assets/stylesheets/shared/fancybox.css" />
-    <script type="text/javascript" src="/assets/javascripts/shared/jquery-1.8.3.min.js"></script>
-    <script type="text/javascript" src="/assets/javascripts/front/jquery.main.js"></script>
-    <script type="text/javascript" src="/assets/javascripts/front/shopping_cart.js"></script>
-    <!--[if IE]><script type="text/javascript" src="/assets/javascripts/shared/ie.js"></script><![endif]-->
-     <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <style type="text/css">.gradient {filter: none;}</style>
-    <![endif]-->
-
-</head>
-<body>
+  <?= form_open('/main/submit', array('class' => 'cart-form')) ?>
     <div class="w1 inner gradient">
         <div id="wrapper">
             <!-- header -->
@@ -45,79 +16,95 @@
             </header>
             <!-- main -->
             <div id="main">
+
                 <!-- section -->
                 <section class="section">
                     <h1>Preview Your Cart:</h1>
                     <div class="preview-area same">
                         <!-- preview-table -->
                         <div class="preview-table">
-                            <table class="shopping-cart-table-1">
-                              <tr>
-                                <th scope="col">Qty</th>
-                                <th scope="col">Item Description</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Remove</th>
-                            </tr>
-                            <?php foreach($cart as $item) { ?>
-                            <tr data-price="<?= $item['price'] ?>" data-id="<?= $item['id'] ?>" data-row="<?= $item['rowid'] ?>">
-                                <td class="qty"><input value="<?=$item['qty'];?>" maxlength="1" name="qty" style="width:20px;" type="text"></input></td>
-                                <td><?=$item['name'];?></td>
-                                <td><?= $item['subtotal'] == '0.00' ? '<strong>FREE</strong>' : $item['price'] ?></td>
-                                <td><?php echo anchor('main/remove/' . $item['rowid'], 'X' ); ?></td>
+                            <table class="order-lines">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Qty</th>
+                                    <th scope="col">Item Description</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              <?php foreach($products as $product) { ?>
+                              <tr class="product-<?= $product['id'] ?> hidden" data-price="<?= $product['price'] ?>">
+                                  <td>
+                                    <?= form_hidden('order_line[' . $product['id'] . '][id]', $product['id']) ?>
+                                    <?= form_input('order_line[' . $product['id'] . '][qty]', 0, 'class="qty"') ?>
+                                </td>
+                                <td><?= $product['title'] ?></td>
+                                <td>
+                                    <?php if($product['price'] == 0) { ?>
+                                    <span style="color:Red;font-weight:bold;">FREE</span>
+                                    <?php } else{ ?>
+                                        <?= $product['price'] ?>
+                                    <?php } ?>
+                                </td>
+                                <td>
+                                    <?php if($product['id'] != 1 && $product['id'] != 2 && $product['id'] != 7) { ?>
+                                    <a href="#" class="remove" data-id="<?= $product['id'] ?>">X</a>
+                                    <?php } ?>
+                                </td>
                             </tr>
                             <?php } ?>
-
-                        </table>
-
-                    </div>
-                    <!-- product -->
-                    <div class="product same-height">
-                        <h2>30-Day Risk-Free Trial Package:</h2>
-                        <div class="image">
-                            <img src="/assets/images/image02.png" width="387" height="284" alt="image description"></div>
-                            <div class="holder">
-                                <ul class="list">
-                                    <li>WINBOT Window Cleaning Robot</li>
-                                    <li>2 Sets of Microfiber Cleaning Pads</li>
-                                    <li>Professional Cleaning Solution</li>
-                                    <li>Remote Control and Batteries</li>
-                                    <li>Safety Pod and Safety Rope</li>
-                                    <li>Power Adapter</li>
-                                </ul>
-                                <ul class="list">
-                                    <li>3 FREE Bonus Sets of Microfiber Cleaning Pads</li>
-                                    <li>FREE Cleaning Solution 70.5 oz</li>
-                                    <li>FREE Extension Cord 4'9"</li>
-                                    <li>FREE Finishing Cloth</li>
-                                </ul>
-                            </div>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- product -->
+                <div class="product same-height">
+                    <h2>30-Day Risk-Free Trial Package:</h2>
+                    <div class="image">
+                        <img src="/assets/images/image02.png" width="387" height="284" alt="image description"></div>
+                        <div class="holder">
+                            <ul class="list">
+                                <li>WINBOT Window Cleaning Robot</li>
+                                <li>2 Sets of Microfiber Cleaning Pads</li>
+                                <li>Professional Cleaning Solution</li>
+                                <li>Remote Control and Batteries</li>
+                                <li>Safety Pod and Safety Rope</li>
+                                <li>Power Adapter</li>
+                            </ul>
+                            <ul class="list">
+                                <li>3 FREE Bonus Sets of Microfiber Cleaning Pads</li>
+                                <li>FREE Cleaning Solution 70.5 oz</li>
+                                <li>FREE Extension Cord 4'9"</li>
+                                <li>FREE Finishing Cloth</li>
+                            </ul>
                         </div>
                     </div>
-                </section>
-                <!-- section -->
-                <section class="section">
-                    <div id="pnlUpsells">
-                        <h1>Clean Even More:</h1>
-                        <div class="columns">
-                            <?php foreach($upsells as $upsell) { ?>
-                            <article class="col">
-                                <img src="/assets/<?=$upsell['image'];?>" width="104" height="83" alt="image description">
-                                <?= form_open('main/add', array('class' => 'holder')) ?>
+                </div>
+            </section>
+            <!-- section -->
+            <section class="section">
+                <div id="pnlUpsells">
+                    <h1>Clean Even More:</h1>
+                    <div class="columns">
+                        <?php foreach($upsells as $upsell) { ?>
+                        <article class="col">
+                            <img src="/assets/<?=$upsell['image'];?>" width="104" height="83" alt="image description">
+                            <div class="holder">
                                 <h2><?=$upsell['title'];?></h2>
                                 <span class="price"><?=$upsell['price'];?></span>
                                 <?php echo form_hidden('id', $upsell['id']) ?>
-                                <?php echo form_submit('action', 'Add to Cart', "class='button'"); ?>
-                                <?= form_close() ?>
-                            </article>
-                            <?php } ?>
-                        </div>
+                                <a href="#" class="add button" data-id="<?= $upsell['id'] ?>">Add to Cart</a>
+                            </div>
+                        </article>
+                        <?php } ?>
                     </div>
-                </section>
-                <section class="section">
-                    <h1>Risk-Free Checkout:</h1>
-                    <!-- form -->
+                </div>
+            </section>
+            <section class="section">
+                <h1>Risk-Free Checkout:</h1>
+                <!-- form -->
 
-                    <?= form_open('main/checkout', array('id' => 'form1', 'class' => 'form same')) ?>
+                <div id="form" class="form same">
                     <fieldset>
                         <div class="column-holder">
                             <!-- column -->
@@ -128,28 +115,31 @@
                                 </div>
                                 <div class="block">
                                     <div class="row">
+                                        <?= form_error('email');?>
                                         <label for="emailField">Email Address:</label>
                                         <div class="int-holder">
-                                            <input id="emailField" name="email" type="email" required/>
+                                            <input id="email" type="email" name="email" class="required email" />
                                         </div>
                                     </div>
                                     <div class="row">
+                                        <?= form_error('con_email');?>
                                         <label for="confirmEmailField">Confirm Email:</label>
                                         <div class="int-holder">
-                                            <input id="confirmEmailField" name="confirmEmail" type="email" required/>
+                                            <input id="confirmEmailField" name="confirmEmail" type="email" class="required email" equalTo="#email"/>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <label for="firstNameField">First Name:</label>
+                                        <?= form_error('b_first_name');?>
+                                        <label for="b_first_name">First Name:</label>
                                         <div class="int-holder">
-                                           <input id="firstNameField" name="firstName" type="text" required/>
+                                           <input id="b_first_name" name="b_first_name" type="text" class="required"/>
                                        </div>
                                    </div>
                                    <div class="row">
-                                    <label for="tbxLName">Last Name:</label>
+                                    <?= form_error('b_last_name');?>
+                                    <label for="b_last_name">Last Name:</label>
                                     <div class="int-holder">
-                                        <input id="tbxLName" name="tbxLName" type="text" required/>
-
+                                        <input id="b_last_name" name="b_last_name" type="text" class="required"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -163,122 +153,58 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <label for="tbxAddress">Address:</label>
+                                    <?= form_error('b_address');?>
+                                    <label for="b_address">Address:</label>
                                     <div class="int-holder">
-                                        <input id="tbxAddress" name="tbxAddress" type="text"/>
+                                        <input id="b_address" name="b_address" type="text" class="required check-PObox"/>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <label for="tbxApt">Suite or Apt:</label>
+                                    <?= form_error('b_apt');?>
+                                    <label for="b_apt">Suite or Apt:</label>
                                     <div class="int-holder">
-                                        <input id="tbxApt" name="tbxApt" placeholder="optional" type="text"/>
+                                        <input id="b_apt" name="b_apt" placeholder="optional" type="text"/>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <label for="tbxCity">City:</label>
+                                    <?= form_error('b_city');?>
+                                    <label for="b_city">City:</label>
                                     <div class="int-holder">
-                                        <input ID="tbxCity" name="tbxCity" type="text"/>
+                                        <input ID="b_city" name="b_city" type="text" class="required"/>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <label for="state_province">State/Province:</label>
                                     <div class="int-holder" id="state_province">
-                                        <select id="State" name="State" style="width:137px;" class="text" >
-                                            <option value="" selected="selected"></option>
-                                            <option value="AL">Alabama</option>
-                                            <option value="AK">Alaska</option>
-                                            <option value="AR">Arkansas</option>
-                                            <option value="AZ">Arizona</option>
-                                            <option value="CA" >California</option>
-                                            <option value="CO" >Colorado</option>
-                                            <option value="CT" >Connecticut</option>
-                                            <option value="DC" >Dist Of Columbia</option>
-                                            <option value="DE" >Delaware</option>
-                                            <option value="FL" >Florida</option>
-                                            <option value="GA" >Georgia</option>
-                                            <option value="HI" >Hawaii</option>
-                                            <option value="IA" >Iowa</option>
-                                            <option value="ID" >Idaho</option>
-                                            <option value="IL" >Illinois</option>
-                                            <option value="IN" >Indiana</option>
-                                            <option value="KS" >Kansas</option>
-                                            <option value="KY" >Kentucky</option>
-                                            <option value="LA" >Louisiana</option>
-                                            <option value="MA" >Massachusetts</option>
-                                            <option value="MD" >Maryland</option>
-                                            <option value="ME" >Maine</option>
-                                            <option value="MI" >Michigan</option>
-                                            <option value="MN" >Minnesota</option>
-                                            <option value="MO" >Missouri</option>
-                                            <option value="MS" >Mississippi</option>
-                                            <option value="MT" >Montana</option>
-                                            <option value="NC" >North Carolina</option>
-                                            <option value="ND" >North Dakota</option>
-                                            <option value="NE" >Nebraska</option>
-                                            <option value="NH" >New Hampshire</option>
-                                            <option value="NJ" >New Jersey</option>
-                                            <option value="NM" >New Mexico</option>
-                                            <option value="NV" >Nevada</option>
-                                            <option value="NY" >New York</option>
-                                            <option value="OH" >Ohio</option>
-                                            <option value="OK" >Oklahoma</option>
-                                            <option value="OR" >Oregon</option>
-                                            <option value="PA" >Pennsylvania</option>
-                                            <option value="RI" >Rhode Island</option>
-                                            <option value="SC" >South Carolina</option>
-                                            <option value="SD" >South Dakota</option>
-                                            <option value="TN" >Tennessee</option>
-                                            <option value="TX" >Texas</option>
-                                            <option value="UT" >Utah</option>
-                                            <option value="VA" >Virginia</option>
-                                            <option value="VI" >Vermont</option>
-                                            <option value="WA" >Washington</option>
-                                            <option value="WI" >Wisconsin</option>
-                                            <option value="WV" >West Virginia</option>
-                                            <option value="WY" >Wyoming</option>
-                                        </select>
-                                        <select id="Province" name="Province" style="width:137px;" class="text hidden">
-                                            <option value="" selected="selected"></option>
-                                            <option value="AB" >Alberta</option>
-                                            <option value="BC" >British Columbia</option>
-                                            <option value="MB" >Manitoba</option>
-                                            <option value="NB" >New Brunswick</option>
-                                            <option value="NL" >Newfoundland and Labrador</option>
-                                            <option value="NT" >Northwest Territories</option>
-                                            <option value="NS" >Nova Scotia</option>
-                                            <option value="NU" >Nunavut</option>
-                                            <option value="ON" >Ontario</option>
-                                            <option value="PE" >Prince Edward Island</option>
-                                            <option value="QC" >Quebec</option>
-                                            <option value="SK" >Saskatchewan</option>
-                                            <option value="YT" >Yukon</option>
-                                        </select>
-                                        <select id="Region" name="Region" style="width:137px;" class="text hidden">
+                                        <?= form_dropdown('b_state', states(), null, 'class="b_states required"') ?>
+                                        <?= form_dropdown('b_province', provinces(), null, 'class="b_province hidden"') ?>
+
+                                        <select id="b_region" name="b_region" class="text hidden">
                                             <option value="PR">Puerto Rico</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <label for="tbxZip">Zip/Postal Code:</label>
+                                    <label for="b_zip">Zip/Postal Code:</label>
                                     <div class="int-holder">
-                                        <input type="text" id="tbxZip" name="tbxZip" />
+                                        <input type="text" id ="b_zip" name="b_zip" class="zip"/>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <label for="tbxPhone">Phone Number:</label>
+                                    <label for="phone">Phone Number:</label>
                                     <div class="int-holder">
-                                        <input id="tbxPhone" name="tbxPhone" placeholder="10 digits only" type="text"  />
+                                        <input name="phone" placeholder="Enter 10 digits only" type="text" class="required phone" />
                                     </div>
                                 </div>
                                 <div class="row">
                                     <label for="tbxExt">Extension:</label>
                                     <div class="int-holder">
-                                        <input id="tbxExt" name="tbxExt" placeholder="optional" type="text" />
+                                        <input id="tbxExt" name="phone-extension" placeholder="optional" type="text" />
                                     </div>
                                 </div>
                                 <!-- check-box -->
                                 <div class="check-box">
-                                    <input id="ckbxAddressDiffer" name=ckbxAddressDiffer type="checkbox"/>
+                                    <input id="ckbxAddressDiffer" name="ckbxAddressDiffer" type="checkbox"/>
                                     <label for="ckbxAddressDiffer">Shipping Address is different</label>
                                 </div>
                             </div>
@@ -291,29 +217,29 @@
                                         <?= form_error('s_first_name');?>
                                         <label for="s_first_name">Ship First Name:</label>
                                         <div class="int-holder">
-                                            <input id="s_first_name" type="text" name="s_first_name" class="shipping_validate"/>
+                                            <input id="s_first_name" type="text" name="s_first_name" class="required"/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <label for="s_last_name">Ship Last Name:</label>
                                         <div class="int-holder">
-                                            <input id="s_last_name" type="text" name="s_last_name" class="shipping_validate"/>
+                                            <input id="s_last_name" type="text" name="s_last_name" class="required"/>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <label for="shipCountry">Country:</label>
+                                        <label for="s_country">Country:</label>
                                         <div class="int-holder">
-                                         <select id="shipCountry" name="shipCountry" class="text" style="width:137px;">
+                                         <select id="s_country" name="s_country" class="text">
                                             <option value="United States" selected="selected">United States</option>
-                                            <option value="Canada" selected="selected">Canada</option>
-                                            <option value="Puerto Rico" selected="selected">Puerto Rico</option>
+                                            <option value="Canada">Canada</option>
+                                            <option value="Puerto Rico">Puerto Rico</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <label for="s_address">Address:</label>
                                     <div class="int-holder">
-                                        <input id="s_address" type="text" name="s_address">
+                                        <input id="s_address" type="text" name="s_address" class="required">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -325,258 +251,226 @@
                                 <div class="row">
                                     <label for="s_city">City:</label>
                                     <div class="int-holder">
-                                       <input id="s_city" type="text" name="s_city">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <label for="shipState">State/Province:</label>
-                                    <div class="int-holder" id="Ship_state_province">
-                                        <select id="shipState" name="shipState" style="width:137px;" class="text" >
-                                            <option value="" selected="selected"></option>
-                                            <option value="AL">Alabama</option>
-                                            <option value="AK">Alaska</option>
-                                            <option value="AR">Arkansas</option>
-                                            <option value="AZ">Arizona</option>
-                                            <option value="CA" >California</option>
-                                            <option value="CO" >Colorado</option>
-                                            <option value="CT" >Connecticut</option>
-                                            <option value="DC" >Dist Of Columbia</option>
-                                            <option value="DE" >Delaware</option>
-                                            <option value="FL" >Florida</option>
-                                            <option value="GA" >Georgia</option>
-                                            <option value="HI" >Hawaii</option>
-                                            <option value="IA" >Iowa</option>
-                                            <option value="ID" >Idaho</option>
-                                            <option value="IL" >Illinois</option>
-                                            <option value="IN" >Indiana</option>
-                                            <option value="KS" >Kansas</option>
-                                            <option value="KY" >Kentucky</option>
-                                            <option value="LA" >Louisiana</option>
-                                            <option value="MA" >Massachusetts</option>
-                                            <option value="MD" >Maryland</option>
-                                            <option value="ME" >Maine</option>
-                                            <option value="MI" >Michigan</option>
-                                            <option value="MN" >Minnesota</option>
-                                            <option value="MO" >Missouri</option>
-                                            <option value="MS" >Mississippi</option>
-                                            <option value="MT" >Montana</option>
-                                            <option value="NC" >North Carolina</option>
-                                            <option value="ND" >North Dakota</option>
-                                            <option value="NE" >Nebraska</option>
-                                            <option value="NH" >New Hampshire</option>
-                                            <option value="NJ" >New Jersey</option>
-                                            <option value="NM" >New Mexico</option>
-                                            <option value="NV" >Nevada</option>
-                                            <option value="NY" >New York</option>
-                                            <option value="OH" >Ohio</option>
-                                            <option value="OK" >Oklahoma</option>
-                                            <option value="OR" >Oregon</option>
-                                            <option value="PA" >Pennsylvania</option>
-                                            <option value="RI" >Rhode Island</option>
-                                            <option value="SC" >South Carolina</option>
-                                            <option value="SD" >South Dakota</option>
-                                            <option value="TN" >Tennessee</option>
-                                            <option value="TX" >Texas</option>
-                                            <option value="UT" >Utah</option>
-                                            <option value="VA" >Virginia</option>
-                                            <option value="VI" >Vermont</option>
-                                            <option value="WA" >Washington</option>
-                                            <option value="WI" >Wisconsin</option>
-                                            <option value="WV" >West Virginia</option>
-                                            <option value="WY" >Wyoming</option>
-                                        </select>
-                                        <select id="shipProvince" name="shipProvince" style="width:137px;" class="text hidden">
-                                            <option value="" selected="selected"></option>
-                                            <option value="AB" >Alberta</option>
-                                            <option value="BC" >British Columbia</option>
-                                            <option value="MB" >Manitoba</option>
-                                            <option value="NB" >New Brunswick</option>
-                                            <option value="NL" >Newfoundland and Labrador</option>
-                                            <option value="NT" >Northwest Territories</option>
-                                            <option value="NS" >Nova Scotia</option>
-                                            <option value="NU" >Nunavut</option>
-                                            <option value="ON" >Ontario</option>
-                                            <option value="PE" >Prince Edward Island</option>
-                                            <option value="QC" >Quebec</option>
-                                            <option value="SK" >Saskatchewan</option>
-                                            <option value="YT" >Yukon</option>
-                                        </select>
-                                        <select id="shipRegion" name="shipRegion" style="width:137px;" class="text hidden">
-                                            <option value="PR">Puerto Rico</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <label for="s_zip">Zip/Postal Code:</label>
-                                    <div class="int-holder">
-                                       <input id="s_zip" type="text" name="s_zip" class="zip">
-                                        <span class="hidden zip-error error">Please enter a valid zip code</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                </div>
-                 <!-- end column 1-->
-                    <!-- column -->
-                    <div class="column same-height">
-                        <!-- radio-box Payment Options-->
-                        <div class="radio-box">
-                            <h2>Payment Options:</h2>
-                            <a href="#popup8" id="payment-options-link" class="link lightbox" style="margin: -23px 140px 10px"><small>See Details</small></a>
-                            <div class="row">
-                                <input id="multiPay" name="paymentOption" value="multiPay" type="radio" checked />
-                                <label id="lblMultiPayRadio" for="multiPay">Multi-Pay: 5 Payments of $79.99</label>
-                            </div>
-                            <div class="row">
-                                <input id="singlePay" name="paymentOption" type="radio" value="singlePay"  />
-                                <label id="lblSinglePayRadio" for="singlePay">Single Pay $399.95"</label>
-                            </div>
-                            <div id="panel1" >
-                                <strong class="note">Wait! Choose Single Pay and Receive FREE Shipping!</strong>
-                            </div>
-                        </div>
-                        <!-- radio-box Shipping Methods -->
-                        <div class="radio-box">
-                            <h2>Shipping Methods:</h2>
-                            <a href="#popup9" id="shipping-options-link" class="link lightbox" style="margin: -23px 145px 10px"><small>See Details</small></a>
-                            <div class="row">
-                                <input id="standardShip" value="standardShip" type="radio" checked="checked" name="shipping" />
-                                <label for="standardShip">Standard Shipping 2-4 weeks $24.95</label>
-                            </div>
-                            <div class="row">
-                                <input id="rushShip" type="radio" name="shipping" />
-                                <label for="rushShip">Expedited Shipping 7-10 Days</label>
-                            </div>
-                        </div>
-                        <div class="block">
-                            <h2>Credit Card Information:</h2>
-                            <div class="row">
-                                <label for="cardType">Credit Card Type:</label>
-                                <div class="int-holder">
-                                    <select id="cardType" class="card" name="cardType" style="width:125px;">
-                                        <option value="Visa" selected="selected">Visa</option>
-                                        <option value="Master Card" >Master Card</option>
-                                        <option value="American Express" >American Express</option>
-                                        <option value="Discover" >Discover</option>
+                                       <input id="s_city" type="text" name="s_city" class="required">
+                                   </div>
+                               </div>
+                               <div class="row">
+                                <label for="shipState">State/Province:</label>
+                                <div class="int-holder" id="Ship_state_province">
+                                    <?= form_dropdown('s_state', states(), null, 'class="s_states"') ?>
+                                    <?= form_dropdown('s_province', provinces(), null, 'class="s_province hidden"') ?>
+                                    <select id="s_region" name="s_region" class="text hidden">
+                                        <option value="PR">Puerto Rico</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="row">
-                                <label for="ccNumber">Card Number:</label>
+                                <label for="s_zip">Zip/Postal Code:</label>
                                 <div class="int-holder">
-                                    <input id="ccNumber" name="ccNumber" type="text" autocomplete="off" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label>Expiration Date:</label>
-                                <div class="int-holder">
-                                    <select id="expireMonth" name="expireMonth" style="font-size: 10pt;">
-                                        <option selected="selected" value="">Month</option>
-                                        <option value="1">Jan</option>
-                                        <option value="2">Feb</option>
-                                        <option value="3">March</option>
-                                        <option value="4">April</option>
-                                        <option value="5">May</option>
-                                        <option value="6">June</option>
-                                        <option value="7">July</option>
-                                        <option value="8">Aug</option>
-                                        <option value="9">Sept</option>
-                                        <option value="10">Oct</option>
-                                        <option value="11">Nov</option>
-                                        <option value="12">Dec</option>
-                                    </select>
-
-                                    &nbsp;&nbsp;
-                                    <select name="expireYear" id="expireYear" style="font-size: 10pt;">
-                                     <option selected="selected" value="">Year</option>
-                                     <option value="2013">2013</option>
-                                     <option value="2014">2014</option>
-                                     <option value="2015">2015</option>
-                                     <option value="2016">2016</option>
-                                     <option value="2017">2017</option>
-                                     <option value="2018">2018</option>
-                                     <option value="2019">2019</option>
-                                     <option value="2020">2020</option>
-
-                                 </select>
-                             </div>
-                         </div>
-                         <div class="row">
-                            <label for="tbxCVC">CVC Code:</label>
-                            <div class="wrapper">
-                                <div class="int-holder width01">
-                                    <input name="tbxCVC" type="text" id="tbxCVC" autocomplete="off" />
-                                </div>
-                                <a class="thumbnail link" href="#thumb">What’s This?<span><img src="images/cvv2.jpg" /></span></a>
-                            </div>
-                        </div>
-                        <!-- check-box -->
-                        <div class="check-box">
-                            <input id="receiveEmail" type="checkbox" name="receiveEmail" />
-                            <label for="receiveEmail">Receive News &amp; Promotions by Email</label>
-                        </div>
-
+                                   <input id="s_zip" type="text" name="s_zip" class="zip">
+                                   <span class="hidden zip-error error">Please enter a valid zip code</span>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               <!-- end column 1-->
+               <!-- column -->
+               <div class="column same-height">
+                <!-- radio-box Payment Options-->
+                <div class="radio-box">
+                    <h2>Payment Options:</h2>
+                    <a href="#popup8" class="link lightbox" style="margin: -23px 140px 10px"><small>See Details</small></a>
+                    <div class="row">
+                        <input id="multipay" name="payment-option" type="radio" value="multipay" checked="checked"/>
+                        <label id="lblMultiPayRadio" for="multiPay">Multi-Pay: 5 Payments of $79.99</label>
                     </div>
-                    <div style="margin: 15px 0 0 -27px; ">
-                        <label for="couponCode">Coupon Code</label>
-                        <input name="couponCode" type="text" id="couponCode" style="width:75px;" />&nbsp;&nbsp;
-                        <input type="submit" name="btnCoupon" value="Apply" id="btnCoupon" style="color:#8B6B3F;" />
+                    <div class="row">
+                        <input id="singlepay" name="payment-option" type="radio" value="singlepay"/>
+                        <label id="lblSinglePayRadio" for="singlePay">Single Pay $399.95"</label>
+                    </div>
+                    <div id="Note">
+                        <strong>Wait! Choose Single Pay and Receive FREE Shipping!</strong>
                     </div>
                 </div>
+                <!-- radio-box Shipping Methods -->
+                <div class="radio-box">
+                    <h2>Shipping Methods:</h2>
+                    <a href="#popup9" class="link lightbox" style="margin: -23px 145px 10px"><small>See Details</small></a>
+                    <div class="row">
+                        <input id="standardShip" value="Standard" type="radio" checked="checked" name="shipping" />
+                        <label for="standardShip">Standard Shipping 2-4 weeks <span class="standard shipping-total"></span></label>
+                    </div>
+                    <div id="expedite" class="row">
+                        <input id="rushShip" type="radio" name="shipping" value="Rush" />
+                        <label for="rushShip">Expedited Shipping 7-10 Days <span class="rush shipping-total hidden"></label>
+                    </div>
+                </div>
+                <div class="block">
+                    <h2>Credit Card Information:</h2>
+                    <div class="row">
+                        <label for="cardType">Credit Card Type:</label>
+                        <div class="int-holder">
+                            <select id="cardType" class="card" name="cardType" style="width:125px;">
+                                <option value="Visa" selected="selected">Visa</option>
+                                <option value="Master Card" >Master Card</option>
+                                <option value="American Express" >American Express</option>
+                                <option value="Discover" >Discover</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label for="ccNumber">Card Number:</label>
+                        <div class="int-holder">
+                            <input id="ccNumber" name="ccNumber" type="text" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label>Expiration Date:</label>
+                        <div class="int-holder">
+                            <select id="expireMonth" name="expireMonth" class="expiration">
+                                <option selected="selected" value="">Month</option>
+                                <option value="1">Jan</option>
+                                <option value="2">Feb</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">Aug</option>
+                                <option value="9">Sept</option>
+                                <option value="10">Oct</option>
+                                <option value="11">Nov</option>
+                                <option value="12">Dec</option>
+                            </select>
+                            <select name="expireYear" id="expireYear" class="expiration">
+                             <option selected="selected" value="">Year</option>
+                             <option value="2014">2014</option>
+                             <option value="2015">2015</option>
+                             <option value="2016">2016</option>
+                             <option value="2017">2017</option>
+                             <option value="2018">2018</option>
+                             <option value="2019">2019</option>
+                             <option value="2020">2020</option>
+                             <option value="2021">2021</option>
+
+                         </select>
+                     </div>
+                 </div>
+                 <div class="row">
+                    <label for="tbxCVC">CVC Code:</label>
+                    <div class="wrapper">
+                        <div class="int-holder width01">
+                            <input name="tbxCVC" type="text" id="tbxCVC" autocomplete="off" />
+                        </div>
+                        <a class="thumbnail link" href="#thumb">What’s This?<span><img src="/assets/images/cvv2.jpg" /></span></a>
+                    </div>
+                </div>
+                <!-- check-box -->
+                <div class="check-box">
+                    <input id="receiveEmail" type="checkbox" name="receiveEmail"/>
+                    <label for="receiveEmail">Receive News &amp; Promotions by Email</label>
+                    <input id="opt-out" type="hidden" value="1" name="opt-in" />
+                </div>
+
             </div>
-            <!-- column -->
-            <div class="column alt same-height">
-                <strong class="title">
-                    <b>30-DAY RISK-FREE TRIAL</b>
-                    <span>100% MONEY-BACK GUARANTEE!</span>
-                </strong>
-                <div class="order-area">
-                    <h2>Confirm Your Order:</h2>
-                    <!-- order-table -->
-                    <div class="order-table">
-                        <div>
-                            <table cellspacing="0" cellpadding="2" rules="all" border="1" id="confirm" style="border-collapse: collapse;">
-                                <tr>
-                                    <th scope="col">Item Description</th>
-                                    <th scope="col">Qty</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Total</th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span id="confirmDescrip">WINBOT 30-Day Risk-Free Trial Package</span>
-                                    </td>
-                                    <td>
-                                        <span id="confirmQty">1</span>
-                                    </td>
-                                    <td>5 payments of $79.99</td>
-                                    <td>
-                                        <span id="confirmTotal">$79.99</span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-
-                        <table id="Totals">
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3">Subtotal:</td><td><span id="lblSubtotal"><?php echo $this->cart->total(); ?></span></td>
-                                </tr><tr>
-                                <td colspan="3">Shipping and Handling:</td><td><span id="lblShipping" style="color:#8B6B3F;font-weight:normal;">$00.00</span></td>
-                            </tr><tr>
-                            <td colspan="3">*Estimated Taxes:</td><td><span id="lblTax">$00.00</span></td>
-                        </tr><tr>
-                        <td colspan="3" class="total">Cart Total:</td><td class="total"><span id="lblTotal">$00.00</span></td>
-                    </tr>
-                </tfoot>
-            </table>
-
+            <div style="margin: 15px 0 0 -27px; ">
+                <label for="discount-code">Coupon Code</label>
+                <input class="discount-code" name="discount-code" type="text" style="width:75px;" />&nbsp;&nbsp;
+                <button class="submit-discount" style="color:#8B6B3F;">Apply</button>
+            </div>
         </div>
     </div>
+    <!-- column -->
+    <div class="column alt same-height">
+        <strong class="title">
+            <b>30-DAY RISK-FREE TRIAL</b>
+            <span>100% MONEY-BACK GUARANTEE!</span>
+        </strong>
+        <div class="order-area">
+            <h2>Confirm Your Order:</h2>
+            <!-- order-table -->
+            <div class="order-table">
+                <div>
+                    <table class="order-lines" cellspacing="0" cellpadding="2" rules="all" border="1" id="confirm" style="border-collapse: collapse;">
+                        <thead>
+                        <tr>
+                            <th scope="col">Item Description</th>
+                            <th scope="col">Qty</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                      <tbody>
+                        <?php foreach($products as $product) { ?>
+                            <tr class="product-<?= $product['id'] ?> hidden" data-price="<?= $product['price'] ?>">
+                            <td><span><?= $product['title'] ?></span></td>
+                            <td>
+                                <?= form_input(array('name' => '[' . $product['id'] . '][qty]', 'value' => '0', 'class' => 'qty', 'maxlength' => '3', 'disabled' => 'disabled')) ?>
+                            </td>
+                            <td>
+                                <?php if($product['price'] == 0) { ?>
+                                <span style="color:Red;font-weight:bold;">FREE</span>
+                                <?php } else if($product['price'] == 79.99) { ?>
+                                <span>5 payments of $79.99</span>
+                                <?php } else { ?>
+                                <span><?= $product['price'] ?></span>
+                                <?php } ?>
+                            </td>
+                            <td>
+                                <span class="rowtotal-<?= $product['id'] ?>">
+                                    <?php if($product['id'] == 2) { ?>
+                                    $79.99
+                                    <?php } ?>
+                                    <?php if($product['id'] == 1) { ?>
+                                    $399.95
+                                    <?php } ?>
+                                </span>
+                            </td>
+                        </tr>
+                         <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
 
-    <a href="#popup7" class="lightbox" id="firstbutton" onclick="_gaq.push(['_trackEvent', 'Cart', 'Click', 'Add to Cart Get Yours Now']);">
-        <img src="/assets/images/button-large.png" width="329" height="55" alt="GET YOURS NOW!" /></a>
+                <table id="Totals">
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">Subtotal:</td>
+                            <td>$<span class="sub-total"></span></td>
+                            <input id="sub-total" name="sub-total" type="hidden" value="0.00" />
+                            <input id="taxable-subtotal" name="taxable-subtotal" type="hidden" value="0.00" />
+                        </tr>
+                        <tr class="discount-row hidden">
+                            <td colspan="3">Discount Amount:</td>
+                            <td>$<span class="discount-total"></span></td>
+                            <input id="discount-total" name="discount-total" type="hidden" value="0.00" />
+                        </tr>
+                        <tr>
+                            <td colspan="3">Shipping and Handling:</td>
+                            <td><span class="shipping-total"></span></td>
+                            <input id="shipping-total" name="shipping-total" type="hidden" value="0.00" />
+                        </tr>
+                        <tr>
+                            <td colspan="3">*Estimated Taxes:</td>
+                            <td>$<span class="tax"></span><input type="hidden" name="tax-total" value="0.00" /></td>
+                            <input id="tax-total" name="tax-total" type="hidden" value="0.00" />
+                            <input id="tax-rate" name="tax-rate" type="hidden" value="0.00" />
+                        </tr>
+                        <tr>
+                            <td colspan="3" >Cart Total:</td>
+                            <td>$<span class="total"></span></td>
+                             <input id="total" name="total" type="hidden" value="0.00" />
+                             <input id="grandtotal" name="grandtotal" type="hidden" value="0.00" />
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <img src="/assets/images/spinner.gif" class="spinner" style="display: none;" />
+<!--         <a href="#popup7" class="lightbox" id="firstbutton" onclick="_gaq.push(['_trackEvent', 'Cart', 'Click', 'Add to Cart Get Yours Now']);">
+            <img src="/assets/images/button-large.png" width="329" height="55" alt="GET YOURS NOW!" />
+        </a> -->
 
         <input type="image" name="btnContinue" id="btnContinue" class="button"  style="height:46px;width:272px;" src="/assets/images/btn-continue.png"  />
         <br />
@@ -584,7 +478,8 @@
         <span style="font-size:7pt;">*Final taxes are calculated upon shipment and will be reflected in your Shipping Confirmation email.</span>
     </div>
 </fieldset>
-<?= form_close() ?>
+<div style="clear: both;"></div>
+</div>
 
 <!-- ad-box -->
 <article class="ad-box">
@@ -843,8 +738,7 @@
                     </ul>
                     <strong class="agreement">I have read and understand these requirements.</strong>
 
-                    <a href="#" class="submit_form_button" onclick="_gaq.push(['_trackEvent', 'Cart', 'Order', 'Place Order']); close_fb(); $('#ibtnContinue').click();">Continue & Place Order</a>
-
+                    <a href="#" class="submit_form_button" onclick="$('.cart-form').submit(); $.fancybox.close(true);">Continue & Place Order</a>
                 </div>
             </div>
         </div>
@@ -897,31 +791,33 @@
         </div>
     </div>
 
-    <div id="fb-root"></div>
-    <script>(function (d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
+<?= form_close() ?>
 
-        <!--
+<!--        <div id="fb-root"></div>
+    <script>(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+-->
+
         <script type="text/javascript">
 
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-40695548-1']);
-        _gaq.push(['_trackPageview', location.pathname + location.search + location.hash]);
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-40695548-1']);
+            _gaq.push(['_trackPageview', location.pathname + location.search + location.hash]);
 
-        (function () {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
+            (function () {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
 
         </script>
 
-        <script type="text/javascript">
+    <script type="text/javascript">
 
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-40695548-1']);
@@ -933,7 +829,4 @@
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
 
-        </script>
-    -->
-</body>
-</html>
+    </script>

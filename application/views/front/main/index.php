@@ -80,7 +80,7 @@
                         <div class="box">
                             <!-- btn-holder -->
                             <div class="btn-holder">
-                                <a href="http://ecovacs.local/index.php/main/shopping_cart" class="button-large" onclick="_gaq.push(['_trackEvent', 'Cart', 'Click', 'Landing Page Get Yours Now']);"><img src="/assets/images/button-large.png" width="329" height="55" alt="GET YOURS NOW!"></a>
+                                <a href="http://ecovacs.local/index.php/main/cart" class="button-large" onclick="_gaq.push(['_trackEvent', 'Cart', 'Click', 'Landing Page Get Yours Now']);"><img src="/assets/images/button-large.png" width="329" height="55" alt="GET YOURS NOW!"></a>
                                 <span>– OVER A <b><sup style="vertical-align: middle">$</sup>450.00</b> VALUE! –</span>
                             </div>
                             <img src="/assets/images/image03.png" width="455" height="225" alt="image description">
