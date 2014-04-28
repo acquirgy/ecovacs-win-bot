@@ -63,20 +63,34 @@ class AppEmail extends MY_Controller {
     $this->mail->send();
   }
 
-  // public function admin($params) {
-  //   $this->mail->clearAddresses();
-  //   $this->mail->addAddress('opsnotification@acquirgy.com');
-  //   $this->mail->addAddress('roeland@bythepixel.com');
-  //   $this->mail->Username = 'KitchenAidReporting@acquirgy.com';
-  //   $this->mail->Password = 'KA_Pass1!';
-  //   $this->mail->From = 'KitchenAidReporting@acquirgy.com';
-  //   $this->mail->FromName = 'KitchenAid Reporting';
-  //   $this->mail->Subject = $params['subject'];
-  //   $params['view'] = isset($params['view']) ? $params['view'] : 'notification_admin';
-  //   $this->mail->Body = $this->ci->load->view('admin/email/' . $params['view'], $params['data'], TRUE);
-  //   if($this->ci->settings['admin_email']) {
-  //     $this->mail->send();
-  //   }
-  // }
+  public function admin($params) {
+    $this->mail->clearAddresses();
+    $this->mail->addAddress('opsnotification@acquirgy.com');
+    $this->mail->addAddress('roeland@bythepixel.com');
+    $this->mail->Username = 'KitchenAidReporting@acquirgy.com';
+    $this->mail->Password = 'KA_Pass1!';
+    $this->mail->From = 'KitchenAidReporting@acquirgy.com';
+    $this->mail->FromName = 'KitchenAid Reporting';
+    $this->mail->Subject = $params['subject'];
+    $params['view'] = isset($params['view']) ? $params['view'] : 'notification_admin';
+    $this->mail->Body = $this->ci->load->view('admin/email/' . $params['view'], $params['data'], TRUE);
+    if($this->ci->settings['admin_email']) {
+      $this->mail->send();
+    }
+  }
+
+    public function fulfillment($params) {
+    $this->mail->clearAddresses();
+    $this->mail->Username = 'customerservice@winbot7.com';
+    $this->mail->Password = 'th4$M14kk!';
+    $this->mail->addAddress('cassandra@mfals.com');
+    $this->mail->addAddress('hilda@mfals.com');
+    $this->mail->addAddress('lindab@mfals.com');
+    $this->mail->From = 'EcovacsOffer@acquirgy.com';
+    $this->mail->FromName = 'WINBOT TV Offer';
+    $this->mail->Subject = $params['subject'];
+    $this->mail->Body = $params['message'];
+    $this->mail->send();
+  }
 
 }

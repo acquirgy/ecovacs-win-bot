@@ -34,6 +34,7 @@ class Main extends MY_Controller {
 
     // Lets create our order
     $order = array(
+      'ip' => $this->input->ip_address(),
       'email' => $this->input->post('email'),
       'opt_out' => $this->input->post('opt-in'),
       'phone' => $this->input->post('phone'),
@@ -173,23 +174,38 @@ class Main extends MY_Controller {
   , ol.qty AS 'QTY1'
   , ol.product_sku AS 'PROD1'
   , ol.product_price AS 'EXT1'
-  , orders.shipping_total AS 'SH1'
+  , CASE
+    WHEN ol.qty > 0 THEN orders.shipping_total
+    ELSE ''
+    END  AS 'SH1'
   , ol2.qty AS 'QTY2'
   , ol2.product_sku AS 'PROD2'
   , ol2.product_price AS 'EXT2'
-  , orders.shipping_total AS 'SH2'
+  , CASE
+    WHEN ol2.qty > 0 THEN orders.shipping_total
+    ELSE ''
+    END  AS 'SH2'
   , ol3.qty AS 'QTY3'
   , ol3.product_sku AS 'PROD3'
   , ol3.product_price AS 'EXT3'
-  , orders.shipping_total AS 'SH3'
+  , CASE
+    WHEN ol3.qty > 0 THEN orders.shipping_total
+    ELSE ''
+    END  AS 'SH3'
   , ol4.qty AS 'QTY4'
   , ol4.product_sku AS 'PROD4'
   , ol4.product_price AS 'EXT4'
-  , orders.shipping_total AS 'SH4'
+  , CASE
+    WHEN ol4.qty > 0 THEN orders.shipping_total
+    ELSE ''
+    END  AS 'SH4'
   , ol5.qty AS 'QTY5'
   , ol5.product_sku AS 'PROD5'
   , ol5.product_price AS 'EXT5'
-  , orders.shipping_total AS 'SH5'
+  , CASE
+    WHEN ol5.qty > 0 THEN orders.shipping_total
+    ELSE ''
+    END  AS 'SH5'
 FROM
     orders
     LEFT OUTER JOIN order_lines ol ON ol.order_id = orders.id
@@ -208,10 +224,27 @@ ORDER BY orders.created_at";
     $orders = $query->result_array();
 
     $this->load->helper('csv_helper');
-    $csv = array_to_csv($orders);
+    $text = array_to_tab_delimited($orders);
+
+    $filename = 'Ecovacs_' . date('Ymd') . '_' . date('hi') . '.txt';
 
     $this->load->helper('download');
-    force_download('mycsvfile.csv', $csv);
+    force_download($filename, $text);
+  }
+
+  public function sendRecordCount() {
+    $this->db->where('created_at >=', CURDATE()-1);
+    $this->db->where('created_at <', CURDATE());
+    $this->db->from('orders');
+    $recordCount = $this->db->count_all_results();
+    $exportfilename = 'Ecovacs_' . date('Ymd') . 'txt';
+
+    $email = array(
+      'subject' => 'Ecovacs File Submission for Web Orders',
+      'message' => special_characters('File: ' . $exportfilename . ' containing ' . $recordCount . ' records has been posted to SFTP.')
+    );
+
+      $this->appemail->fulfillment($email);
   }
 
   public function get_discount($code = false) {

@@ -49,6 +49,8 @@ class Order_model extends MY_Model {
           $this->db->insert('orders', $order);
           $insert_id = $this->db->insert_id();
 
+          $this->trigger('after_create', $insert_id);
+
           return $insert_id;
       }
       else

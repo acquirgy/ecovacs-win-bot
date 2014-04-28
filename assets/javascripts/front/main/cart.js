@@ -464,7 +464,8 @@ $(document).ready( function() {
             outsideShipping = false;
         } else {
           $('#expedite').addClass('hidden');      // Hide expedited shipping option
-          $('input:radio[name="shipping"]').filter('[value="standardShip"]').attr('checked', true);   // Check Standard Shipping
+          $('input:radio[name="shipping"]').filter('[value="Standard"]').attr('checked', true);   // Check Standard Shipping
+          $('input:radio[name="shipping"]').filter('[value="Rush"]').attr('checked', false);   // Uncheck Rush Shipping
           outsideShipping = true;
         }
       } else {
@@ -474,7 +475,8 @@ $(document).ready( function() {
             outsideShipping = false;
         } else {
           $('#expedite').addClass('hidden');      // Hide expedited shipping option
-          $('input:radio[name="shipping"]').filter('[value="standardShip"]').attr('checked', true);   // Check Standard Shipping
+          $('input:radio[name="shipping"]').filter('[value="Standard"]').attr('checked', true);   // Check Standard Shipping
+          $('input:radio[name="shipping"]').filter('[value="Rush"]').attr('checked', false);   // Uncheck Rush Shipping
           outsideShipping = true;
         }
       }
