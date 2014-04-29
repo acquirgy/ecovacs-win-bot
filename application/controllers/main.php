@@ -119,156 +119,39 @@ class Main extends MY_Controller {
 
   }
 
-  public function csv_test() {
 
-    $this->layout = false;
-    $this->view = false;
-
-    // $orders =  $this->order_model->get_all();
-    $sql = "SELECT
-    'WEB' AS 'SourceCode'
-  , DATE_FORMAT(orders.created_at,'%m/%d/%Y') AS 'DateOrdered'
-  , orders.id AS 'ReferenceNumber'
-  , CASE
-    WHEN orders.opt_out = 0 THEN 'no'
-    ELSE 'yes'
-    END AS 'Opt-In'
-  , orders.b_first_name AS 'FirstName'
-  , orders.b_last_name AS 'LastName'
-  , orders.b_address AS 'BillingAddress1'
-  , orders.s_apt AS 'BillingAddress2'
-  , orders.b_city AS 'BillingCity'
-  , orders.b_state AS 'BillingState'
-  , REPLACE(orders.b_zip, '-', '')  AS 'BillingZip'
-  , orders.b_country AS 'BillingCountry'
-  , orders.phone AS 'Phone'
-  , orders.email AS 'Email'
-  , orders.payment_type AS 'PaymentMethod'
-  , '' AS 'CreditCardNumber'
-  , '' AS 'ExpDate'
-  , '' AS 'CVV2'
-  , '' AS 'AuthCode'
-  , '' AS 'ExtendedTransItem'
-  , '' AS 'CheckRouting#'
-  , '' AS 'Account#'
-  , '' AS 'Check#'
-  , '' AS 'Amount Paid'
-  , CASE
-    WHEN orders.shipping_type = 'Rush' THEN 'UP2'
-    WHEN orders.s_country = 'Canada' THEN 'UP9'
-    WHEN orders.s_country = 'Puerto Rico' OR orders.s_state = 'AK' OR orders.s_state = 'HI' THEN 'UPC'
-    ELSE ''
-    END AS 'Special Ship Method'
-  , orders.s_first_name AS 'Shipping FirstName'
-  , orders.s_last_name AS 'Shipping LastName'
-  , orders.s_address AS 'Shipping Address1'
-  , orders.s_apt AS 'Shipping Address2'
-  , orders.s_city AS 'Shipping City'
-  , orders.s_state AS 'Shipping State'
-  , REPLACE(orders.s_zip, '-', '')  AS 'Shipping Zip'
-  , orders.s_country AS 'Shipping Country'
-  , CONVERT(orders.tax_total, char(6)) AS 'Order Tax'
-  , NULL AS 'ORDER S&H'
-  , orders.discount_total AS 'Order Discount'
-  , NULL AS 'MB Code'
-  , ol.qty AS 'QTY1'
-  , ol.product_sku AS 'PROD1'
-  , ol.product_price AS 'EXT1'
-  , CASE
-    WHEN ol.qty > 0 THEN orders.shipping_total
-    ELSE ''
-    END  AS 'SH1'
-  , ol2.qty AS 'QTY2'
-  , ol2.product_sku AS 'PROD2'
-  , ol2.product_price AS 'EXT2'
-  , CASE
-    WHEN ol2.qty > 0 THEN orders.shipping_total
-    ELSE ''
-    END  AS 'SH2'
-  , ol3.qty AS 'QTY3'
-  , ol3.product_sku AS 'PROD3'
-  , ol3.product_price AS 'EXT3'
-  , CASE
-    WHEN ol3.qty > 0 THEN orders.shipping_total
-    ELSE ''
-    END  AS 'SH3'
-  , ol4.qty AS 'QTY4'
-  , ol4.product_sku AS 'PROD4'
-  , ol4.product_price AS 'EXT4'
-  , CASE
-    WHEN ol4.qty > 0 THEN orders.shipping_total
-    ELSE ''
-    END  AS 'SH4'
-  , ol5.qty AS 'QTY5'
-  , ol5.product_sku AS 'PROD5'
-  , ol5.product_price AS 'EXT5'
-  , CASE
-    WHEN ol5.qty > 0 THEN orders.shipping_total
-    ELSE ''
-    END  AS 'SH5'
-FROM
-    orders
-    LEFT OUTER JOIN order_lines ol ON ol.order_id = orders.id
-      AND ol.product_id IN (1,2)
-    LEFT OUTER JOIN order_lines ol2 ON ol2.order_id = orders.id
-      AND ol2.product_id = 3
-    LEFT OUTER JOIN order_lines ol3 ON ol3.order_id = orders.id
-      AND ol3.product_id = 4
-    LEFT OUTER JOIN order_lines ol4 ON ol4.order_id = orders.id
-      AND ol4.product_id = 5
-    LEFT OUTER JOIN order_lines ol5 ON ol5.order_id = orders.id
-      AND ol5.product_id = 6
-ORDER BY orders.created_at";
-
-    $query = $this->db->query($sql);
-    $orders = $query->result_array();
-
-    $this->load->helper('csv_helper');
-    $text = array_to_tab_delimited($orders);
-
-    $filename = 'Ecovacs_' . date('Ymd') . '_' . date('hi') . '.txt';
-
-    $this->load->helper('download');
-    force_download($filename, $text);
-  }
-
-  public function sendRecordCount() {
-    $this->db->where('created_at >=', CURDATE()-1);
-    $this->db->where('created_at <', CURDATE());
-    $this->db->from('orders');
-    $recordCount = $this->db->count_all_results();
-    $exportfilename = 'Ecovacs_' . date('Ymd') . 'txt';
-
-    $email = array(
-      'subject' => 'Ecovacs File Submission for Web Orders',
-      'message' => special_characters('File: ' . $exportfilename . ' containing ' . $recordCount . ' records has been posted to SFTP.')
-    );
-
-      $this->appemail->fulfillment($email);
-  }
-
-  public function get_discount($code = false) {
+  public function get_discount($code = false, $address) {
 
     $this->view = false;
+
+    $address = urldecode($address);
+
+    $redeemed = false;
+    $this->db->where('discount_code', $code);
+    $this->db->where('b_address', $address);
+    $rowcount = $this->db->count_all_results('orders');
+    if ($rowcount > 0) {
+      $redeemed = true;
+    }
 
     $discounts = array(
       array(
         'code' => 'SpyPoint30',
         'type' => 'flat',
         'value' => '30',
-        'expiration' => '08/17/2013 '
+        'expiration' => '08/17/2013'
         ),
       array(
         'code' => 'SkyPoint30',
         'type' => 'flat',
         'value' => '30',
-        'expiration' => '08/17/2013 '
+        'expiration' => '08/17/2013'
         ),
       array(
         'code' => 'Percent30',
         'type' => 'percent',
         'value' => '.3',
-        'expiration' => '08/17/2013 '
+        'expiration' => '08/17/2015'
         )
       );
 
@@ -277,6 +160,7 @@ ORDER BY orders.created_at";
     foreach($discounts as $discount) {
       if($discount['code'] == $code) {
         $matched_discount = $discount;
+        if ($redeemed == true) {$matched_discount['message'] = "discount used";}
       }
     }
 

@@ -103,8 +103,12 @@ $(document).ready( function() {
   })
 
   $('#b_address').change(function(){
-    if (shiptoBilling == true)
-    $('#s_address').val($('#b_address').val());
+    if (shiptoBilling == true) {
+      $('#s_address').val($('#b_address').val());
+    }
+    if ($('input[name=discount-code]').val().length > 1 ) {
+      applyCoupon();
+    }
   })
   $('#b_apt').change(function(){
     if (shiptoBilling == true)
@@ -145,28 +149,6 @@ $(document).ready( function() {
     row.find('.qty').val(0);
 
     updatePricing();
-
-  });
-
-  // Discount Code Applied
-  $('.submit-discount').click( function(event) {
-    event.preventDefault();
-
-    console.log('BEFORE ajaxCall');
-    $('.totals').hide();
-    $('.spinner').show();
-
-    var discountCodeSubmitted = $('input[name=discount-code]').val();
-    $.ajax({
-      url: '/main/get_discount/' + discountCodeSubmitted,
-      dataType: 'JSON',
-      success: function(result) {
-        discountCode = result ? result : {}
-        updatePricing();
-        $('.spinner').hide();
-        $('.totals').show();
-      }
-    });
 
   });
 
@@ -348,6 +330,56 @@ $(document).ready( function() {
     updatePricing();
   }
 
+  function validateCoupon() {
+    // Check expiration of discount code
+    var couponDate = new Date(discountCode.expiration);
+    var today = new Date();
+    if (today > couponDate) {
+      $('.discount-code').val('');    // clear coupon code
+      discountCode = {};
+      alert('Coupon has expired');
+      return false;
+    }
+    if (discountCode.message == "discount used") {
+       $('.discount-code').val('');    // clear coupon code
+       discountCode = {};
+       alert('Coupon code already used for this address, discount not applied');
+       return false;
+    }
+  }
+
+  function applyCoupon() {
+    console.log('BEFORE ajaxCall');
+
+    var discountCodeSubmitted = $('input[name=discount-code]').val();
+    if($('#b_address').val().length > 0 && $('#b_address').val() != '') {
+      var address = $('#b_address').val();
+    } else {
+      alert('Billing Address must be filled in');
+      return false;
+    }
+    $('.totals').hide();
+    $('.spinner').show();
+    $.ajax({
+      url: '/index.php/main/get_discount/' + discountCodeSubmitted + '/' + encodeURIComponent(address),
+      dataType: 'JSON',
+      success: function(result) {
+        discountCode = result ? result : {};
+        validateCoupon();
+        updatePricing();
+        $('.spinner').hide();
+        $('.totals').show();
+      }
+    });
+  }
+
+  // Discount Code Applied
+  $('.submit-discount').click( function(event) {
+    event.preventDefault();
+
+    applyCoupon();
+  });
+
   function updatePricing() {
 
     total = subTotal = discountTotal = taxable_subTotal = 0;
@@ -363,14 +395,6 @@ $(document).ready( function() {
       console.log(price2);
       taxable_subTotal += (qty * price2);
     });
-
-    // Check expiration of discount code
-    var couponDate = new Date(discountCode.expiration);
-    var today = new Date();
-    if (today > couponDate) {
-      alert('Coupon has expired');
-      $('.discount-code').val('');    // clear coupon code
-    }
 
     // Figure out discount codes
     if(discountCode.type == 'flat') {
@@ -389,8 +413,9 @@ $(document).ready( function() {
     // Adjust dom with update totals
     $('.sub-total').empty().append(subTotal.toFixed(2));
     $('#sub-total').val(subTotal);
-    $('.discount-total').empty().append(discountTotal);
+    $('.discount-total').empty().append(discountTotal.toFixed(2));
     if (discountTotal > 0) {$('.discount-row').show();}
+    $('#discount-total').val(discountTotal);
     $('.tax').empty().append(taxTotal.toFixed(2));
     $('#tax-total').val(taxTotal);
     $('#tax-rate').val(taxrate);

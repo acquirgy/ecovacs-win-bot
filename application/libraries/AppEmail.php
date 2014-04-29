@@ -42,7 +42,6 @@ class AppEmail extends MY_Controller {
     $this->mail->Username = 'customerservice@winbot7.com';
     $this->mail->Password = 'th4$M14kk!';
     $this->mail->From = 'customerservice@winbot7.com';
-    $this->mail->FromName = 'WINBOT TV Offer';
     $this->mail->Subject = 'SYSTEM ERROR ' .  base_url();
     $message .= '<br /><br /><hr /><br />SERVER:<br /><pre>' . print_r($_SERVER,true);
     $message .= '<br /><br /><hr /><br />POST:<br /><pre>' . print_r($_POST,true);
@@ -57,7 +56,6 @@ class AppEmail extends MY_Controller {
     $this->mail->Password = 'th4$M14kk!';
     $this->mail->addAddress($params['to']);
     $this->mail->From = 'customerservice@winbot7.com';
-    $this->mail->FromName = 'WINBOT TV Offer';
     $this->mail->Subject = $params['subject'];
     $this->mail->Body = $this->ci->load->view('front/main/confirmation_email', $params['data'], TRUE);
     $this->mail->send();
@@ -66,11 +64,9 @@ class AppEmail extends MY_Controller {
   public function admin($params) {
     $this->mail->clearAddresses();
     $this->mail->addAddress('opsnotification@acquirgy.com');
-    $this->mail->addAddress('roeland@bythepixel.com');
-    $this->mail->Username = 'KitchenAidReporting@acquirgy.com';
-    $this->mail->Password = 'KA_Pass1!';
-    $this->mail->From = 'KitchenAidReporting@acquirgy.com';
-    $this->mail->FromName = 'KitchenAid Reporting';
+    $this->mail->Username = 'customerservice@winbot7.com';
+    $this->mail->Password = 'th4$M14kk!';
+    $this->mail->From = 'customerservice@winbot7.com';
     $this->mail->Subject = $params['subject'];
     $params['view'] = isset($params['view']) ? $params['view'] : 'notification_admin';
     $this->mail->Body = $this->ci->load->view('admin/email/' . $params['view'], $params['data'], TRUE);
@@ -79,17 +75,18 @@ class AppEmail extends MY_Controller {
     }
   }
 
-    public function fulfillment($params) {
+    public function fulfillment($message) {
     $this->mail->clearAddresses();
     $this->mail->Username = 'customerservice@winbot7.com';
     $this->mail->Password = 'th4$M14kk!';
-    $this->mail->addAddress('cassandra@mfals.com');
-    $this->mail->addAddress('hilda@mfals.com');
-    $this->mail->addAddress('lindab@mfals.com');
-    $this->mail->From = 'EcovacsOffer@acquirgy.com';
-    $this->mail->FromName = 'WINBOT TV Offer';
-    $this->mail->Subject = $params['subject'];
-    $this->mail->Body = $params['message'];
+    // $this->mail->addAddress('cassandra@mfals.com');
+    // $this->mail->addAddress('hilda@mfals.com');
+    // $this->mail->addAddress('lindab@mfals.com');
+    $this->mail->addAddress('crubin@acquirgy.com');
+    $this->mail->addBCC('crubin@acquirgy.com');
+    $this->mail->From = 'customerservice@winbot7.com';
+    $this->mail->Subject = 'Ecovacs File Submission for Web Orders';
+    $this->mail->Body = $message;
     $this->mail->send();
   }
 
