@@ -34,8 +34,8 @@ $(document).ready( function() {
   $('.cart-form').validate({
     submitHandler: function(form) {
       // do stuff here after form is valid and right before we post the form to server
-      //_gaq.push(['_trackEvent', 'Cart', 'Order', 'Place Order']);
-      //close_fb();
+      _gaq.push(['_trackEvent', 'Cart', 'Order', 'Place Order']);
+      close_fb();
       $(form).submit();
     }
   });
