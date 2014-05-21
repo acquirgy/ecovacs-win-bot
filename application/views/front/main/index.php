@@ -142,8 +142,8 @@
                             <cite>NBC NEWS</cite>
                         </blockquote>
                         <blockquote class="quote">
-                            <q>&ldquo;Intended for home use the Winbot mesmerized attendees as it traveled across a pane of glass, cleaning as it crawled.&rdquo;</q>
-                            <cite>CONSUMER REPORTS</cite>
+                            <q>&ldquo;Outsource to a Robot - Never worry about a streak-free shine again.&rdquo;</q><br />
+                            <cite>INSTYLE MAGAZINE</cite>
                         </blockquote>
                     </div>
                     <a href="#" class="btn">GET YOURS NOW!</a>

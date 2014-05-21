@@ -11,15 +11,15 @@ class Jobs extends MY_Controller {
 
   }
 
-  private function _sftp() {
+  private function _sftp($host, $username, $pw) {
 
     set_include_path(get_include_path() . PATH_SEPARATOR . APPPATH . 'third_party/phpseclib');
 
     include(APPPATH . '/third_party/phpseclib/Net/SSH2.php');
     include(APPPATH . '/third_party/phpseclib/Net/SFTP.php');
 
-    $sftp = new Net_SFTP('sftp.acquirgy.com:3822');
-    if (!$sftp->login('ecovacs', '')) {
+    $sftp = new Net_SFTP($host);
+    if (!$sftp->login($username, $pw)) {
         $sftp = false;
     }
     return $sftp;
@@ -140,7 +140,10 @@ ORDER BY orders.created_at";
     force_download($filename, $text);
 
     // Connect to sftp
-    $sftp = $this->_sftp();
+    $host = '69.170.169.123';
+    $username = 'acquirgy';
+    $pw = 'OhT8eah0';
+    $sftp = $this->_sftp($host, $username, $pw);
   }
 
   public function sendRecordCount() {
@@ -213,7 +216,10 @@ ORDER BY orders.created_at";
     force_download($filename2, $text2);
 
     // Connect to sftp
-    $sftp = $this->_sftp();
+    $host = 'ftp.acquirgy.com:3822';
+    $username = 'ecovacs';
+    $pw = '.wuE#(9-m/';
+    $sftp = $this->_sftp($host, $username, $pw);
   }
 
 }
