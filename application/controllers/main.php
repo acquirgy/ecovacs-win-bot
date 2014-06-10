@@ -186,7 +186,7 @@ class Main extends MY_Controller {
     if($response->isOk()) {
       $card = array(
         'authnet_customer_id' => $response->getCustomerProfileId(),
-        'authnet_payment_profile_id' => $response->getPaymentProfileId(),
+        'authnet_payment_profile_id' => $response->getCustomerPaymentProfileIds(),
         'number' => substr($this->input->post('card_number'), -4),
         'exp_year' => $this->input->post('card_exp_year'),
         'exp_month' => $this->input->post('card_exp_month')
