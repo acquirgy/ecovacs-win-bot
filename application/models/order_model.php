@@ -6,6 +6,7 @@ class Order_model extends MY_Model {
   public $after_create = array('generate_string_id');
   public $before_update = array('updated_at');
   public $before_get = array('default_order');
+  public $has_many = array('order_lines');
 
   protected $return_type = 'array';
   protected $soft_delete = TRUE;

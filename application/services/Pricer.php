@@ -33,6 +33,9 @@ class Pricer {
       }
     }
 
+    // Expedited shipping
+    $pricing['shipping_total'] += ($order['shipping_type'] == 'rush') ? 20.00 : 0;
+
     // Determine tax
     $pricing['tax_rate'] = ($order['b_state_province'] == 'CA') ? 0.08 : 0;
     $pricing['tax_total'] = $pricing['taxable_subtotal'] * $pricing['tax_rate'];

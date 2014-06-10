@@ -58,6 +58,7 @@ class AppEmail extends MY_Controller {
     $this->mail->From = 'customerservice@winbot7.com';
     $this->mail->Subject = $params['subject'];
     $this->mail->Body = $this->ci->load->view('front/main/confirmation_email', $params['data'], TRUE);
+    echo $this->mail->Body; exit();
     $this->mail->send();
   }
 

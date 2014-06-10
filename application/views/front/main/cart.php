@@ -4,7 +4,7 @@
     var regionOptions = { 'PR' : 'Puerto Rico' };
 </script>
 
-  <?= form_open('/main/get_pricing', array('class' => 'cart-form')) ?>
+  <?= form_open('/main/submit', array('class' => 'cart-form')) ?>
     <div class="w1 inner gradient">
         <div id="wrapper">
             <!-- header -->
@@ -41,21 +41,21 @@
                             <tbody>
                               <?php foreach($products as $product) { ?>
                               <tr class="product-<?= $product['id'] ?> hidden" data-price="<?= $product['price'] ?>">
-                                  <td>
+                                <td>
                                     <?= form_hidden('order_lines[' . $product['id'] . '][product_id]', $product['id']) ?>
                                     <?= form_input('order_lines[' . $product['id'] . '][qty]', 0, 'class="qty"') ?>
                                 </td>
                                 <td><?= $product['title'] ?></td>
                                 <td>
                                     <?php if($product['price'] == 0) { ?>
-                                    <span style="color:Red;font-weight:bold;">FREE</span>
+                                        <span style="color:Red;font-weight:bold;">FREE</span>
                                     <?php } else{ ?>
-                                        <?= $product['price'] ?>
+                                        $<?= $product['price'] ?>
                                     <?php } ?>
                                 </td>
                                 <td>
                                     <?php if($product['id'] != 1 && $product['id'] != 2 && $product['id'] != 7) { ?>
-                                    <a href="#" class="remove" data-id="<?= $product['id'] ?>">X</a>
+                                        <a href="#" class="remove" data-id="<?= $product['id'] ?>">X</a>
                                     <?php } ?>
                                 </td>
                             </tr>
@@ -97,7 +97,7 @@
                             <img src="/assets/<?=$upsell['image'];?>" width="104" height="83" alt="image description">
                             <div class="holder">
                                 <h2><?=$upsell['title'];?></h2>
-                                <span class="price"><?=$upsell['price'];?></span>
+                                <span class="price">$<?=$upsell['price'];?></span>
                                 <?php echo form_hidden('id', $upsell['id']) ?>
                                 <a href="#" class="add button" data-id="<?= $upsell['id'] ?>">Add to Cart</a>
                             </div>
@@ -183,7 +183,7 @@
                                         <div class="row">
                                             <label for="b_state_province">State/Province:</label>
                                             <div class="int-holder">
-                                                <select id="b_state_province" name="b_state_province">
+                                                <select id="b_state_province" name="b_state_province" class="required">
                                                     <option value="">loading...</option>
                                                 </select>
                                             </div>
@@ -262,7 +262,7 @@
                                     <div class="row">
                                         <label for="s_state_province">State/Province:</label>
                                         <div class="int-holder">
-                                            <select name="s_state_province" id="s_state_province">
+                                            <select name="s_state_province" class="required" id="s_state_province">
                                                 <option value="">loading...</option>
                                             </select>
                                         </div>
@@ -289,7 +289,7 @@
                     </div>
                     <div class="row">
                         <input id="singlepay" name="payment_option" type="radio" value="singlepay"/>
-                        <label id="lblSinglePayRadio" for="singlepay">Single Pay $399.95"</label>
+                        <label id="lblSinglePayRadio" for="singlepay">Single Pay $399.95</label>
                     </div>
                     <div id="Note">
                         <strong>Wait! Choose Single Pay and Receive FREE Shipping!</strong>
@@ -300,21 +300,23 @@
                     <h2>Shipping Methods:</h2>
                     <a href="#popup9" class="link lightbox" style="margin: -23px 145px 10px"><small>See Details</small></a>
                     <div class="row">
-                        <input id="standardShip" value="Standard" type="radio" checked="checked" name="shipping" />
+                        <input id="standardShip" value="standard" type="radio" checked="checked" name="shipping_type" />
                         <label for="standardShip">Standard Shipping 2-4 weeks <span class="standard shipping-total"></span></label>
                     </div>
                     <div id="expedite" class="row">
-                        <input id="rushShip" type="radio" name="shipping" value="Rush" />
+                        <input id="rushShip" type="radio" name="shipping_type" value="rush" />
                         <label for="rushShip">Expedited Shipping 7-10 Days <span class="rush shipping-total hidden"></label>
                     </div>
                 </div>
                 <div class="block">
                     <h2>Credit Card Information:</h2>
+                    <input type="hidden" name="card_id" id="card_id" value="" />
                     <div class="row">
-                        <label for="cardType">Credit Card Type:</label>
+                        <label for="cardType">Type:</label>
                         <div class="int-holder">
-                            <select id="cardType" class="card" name="cardType" style="width:125px;">
-                                <option value="Visa" selected="selected">Visa</option>
+                            <select id="cardType" class="card required" name="card_type" style="width:125px;">
+                                <option value="">Select</option>
+                                <option value="Visa">Visa</option>
                                 <option value="Master Card" >Master Card</option>
                                 <option value="American Express" >American Express</option>
                                 <option value="Discover" >Discover</option>
@@ -322,30 +324,30 @@
                         </div>
                     </div>
                     <div class="row">
-                        <label for="ccNumber">Card Number:</label>
+                        <label for="ccNumber">Number:</label>
                         <div class="int-holder">
-                            <input id="ccNumber" name="ccNumber" type="text" autocomplete="off" />
+                            <input id="ccNumber" class="required" name="card_number" type="text" maxlength="16" autocomplete="off" />
                         </div>
                     </div>
                     <div class="row">
                         <label>Expiration Date:</label>
                         <div class="int-holder">
-                            <select id="expireMonth" name="expireMonth" class="expiration">
+                            <select id="expireMonth" name="card_exp_month" class="required expiration">
                                 <option selected="selected" value="">Month</option>
-                                <option value="1">Jan</option>
-                                <option value="2">Feb</option>
-                                <option value="3">March</option>
-                                <option value="4">April</option>
-                                <option value="5">May</option>
-                                <option value="6">June</option>
-                                <option value="7">July</option>
-                                <option value="8">Aug</option>
-                                <option value="9">Sept</option>
-                                <option value="10">Oct</option>
-                                <option value="11">Nov</option>
-                                <option value="12">Dec</option>
+                                <option value="01">1 - Jan</option>
+                                <option value="02">2 - Feb</option>
+                                <option value="03">3 - March</option>
+                                <option value="04">4 - April</option>
+                                <option value="05">5 - May</option>
+                                <option value="06">6 - June</option>
+                                <option value="07">7 - July</option>
+                                <option value="08">8 - Aug</option>
+                                <option value="09">9 - Sept</option>
+                                <option value="10">10 - Oct</option>
+                                <option value="11">11 - Nov</option>
+                                <option value="12">12 - Dec</option>
                             </select>
-                            <select name="expireYear" id="expireYear" class="expiration">
+                            <select name="card_exp_year" id="expireYear" class="required expiration">
                              <option selected="selected" value="">Year</option>
                              <option value="2014">2014</option>
                              <option value="2015">2015</option>
@@ -355,7 +357,6 @@
                              <option value="2019">2019</option>
                              <option value="2020">2020</option>
                              <option value="2021">2021</option>
-
                          </select>
                      </div>
                  </div>
@@ -363,7 +364,7 @@
                     <label for="tbxCVC">CVC Code:</label>
                     <div class="wrapper">
                         <div class="int-holder width01">
-                            <input name="tbxCVC" type="text" id="tbxCVC" autocomplete="off" />
+                            <input name="card_code" type="text" id="tbxCVC" autocomplete="off" class="required" />
                         </div>
                         <a class="thumbnail link" href="#thumb">What’s This?<span><img src="/assets/images/cvv2.jpg" /></span></a>
                     </div>
@@ -439,11 +440,11 @@
                     <tfoot>
                         <tr>
                             <td>Subtotal:</td>
-                            <td>$<span class="sub-total"></span></td>
+                            <td><span class="sub-total"></span></td>
                         </tr>
-                        <tr class="discount-row hidden">
+                        <tr class="discount-row">
                             <td>Discount Amount:</td>
-                            <td>$<span class="discount-total"></span></td>
+                            <td><span class="discount-total"></span></td>
                         </tr>
                         <tr>
                             <td>Shipping and Handling:</td>
@@ -451,16 +452,17 @@
                         </tr>
                         <tr>
                             <td>*Estimated Taxes:</td>
-                            <td>$<span class="tax"></span><input type="hidden" name="tax-total" value="0.00" /></td>
+                            <td><span class="tax"></span></td>
                         </tr>
                         <tr>
                             <td>Cart Total:</td>
-                            <td>$<span class="total"></span></td>
+                            <td><span class="total"></span></td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
         </div>
+        <div class="card-error hidden"></div>
         <input type="image" class="submit-order button" src="/assets/images/btn-continue.png"  />
 <!--         <a href="#popup7" class="lightbox" id="firstbutton" onclick="_gaq.push(['_trackEvent', 'Cart', 'Click', 'Add to Cart Get Yours Now']);">
             <img src="/assets/images/button-large.png" width="329" height="55" alt="GET YOURS NOW!" />
@@ -469,6 +471,7 @@
             <img src="/assets/images/spinner.gif" class="spinner" />
             <p>Loading...</p>
         </div>
+
         <br />
         <span id="result" style="color:Red;"></span>
         <span style="font-size:7pt;">*Final taxes are calculated upon shipment and will be reflected in your Shipping Confirmation email.</span>

@@ -34,9 +34,17 @@ $(document).ready( function() {
   $('.cart-form').validate({
     submitHandler: function(form) {
       // do stuff here after form is valid and right before we post the form to server
-      _gaq.push(['_trackEvent', 'Cart', 'Order', 'Place Order']);
-      close_fb();
-      $(form).submit();
+      //_gaq.push(['_trackEvent', 'Cart', 'Order', 'Place Order']);
+      //close_fb();
+      // If no token has been created, do so, otherwise submit!
+      showFormLoader(true);
+      if(!$('#card_id').val()) {
+        tokenizeCard();
+      } else {
+        $('#card_number').val('');
+        $('#card_code').val('');
+        form.submit();
+      }
     }
   });
 
@@ -258,9 +266,7 @@ $(document).ready( function() {
 
 
   function updatePricing() {
-
     showFormLoader(true);
-
     $.ajax({
       type: 'POST',
       url: '/main/get_pricing',
@@ -268,19 +274,33 @@ $(document).ready( function() {
       dataType: 'JSON',
       success: function(result) {
         showFormLoader(false);
-        console.log(result);
         // Adjust dom with update totals
-        $('.sub-total').empty().append(result.subtotal.toFixed(2));
-        $('.discount-total').empty().append(result.discount_total.toFixed(2));
-        $('.discount-row').toggle(result.discount_total > 0 ? 1 : 0);
-        $('.tax').empty().append(result.tax_total.toFixed(2));
-        $('.shipping-total').empty().append(result.shipping_total.toFixed(2));
-        $('.total').empty().append(result.total.toFixed(2));
+        $('.sub-total').empty().append(toDollar(result.subtotal));
+        $('.discount-total').empty().append(toDollar(result.discount_total));
+        $('.discount-row').toggle(result.discount_total > 0 ? true : false);
+        $('.tax').empty().append(toDollar(result.tax_total));
+        $('.shipping-total').empty().append(toDollar(result.shipping_total));
+        $('.total').empty().append(toDollar(result.total));
       }
-
     });
+  }
 
-
+  function tokenizeCard() {
+    $.ajax({
+      type: 'POST',
+      url: '/main/tokenize_card',
+      data: $('form').serialize(),
+      dataType: 'JSON',
+      success: function(result) {
+        if(result.error) {
+          showFormLoader(false);
+          $('.card-error').empty().append(result.error).show();
+        } else {
+          $('#card_id').val(result.card_id);
+          $('form').submit();
+        }
+      }
+    });
   }
 
   function getShippingAmount() {
@@ -351,11 +371,13 @@ $(document).ready( function() {
   }
 
   function showFormLoader(show) {
-
     $('#totals').toggle(!show);
     $('.submit-order').toggle(!show);
     $('.form-loader').toggle(show);
+  }
 
+  function toDollar(amount) {
+    return '$' + amount.toFixed(2);
   }
 
 });

@@ -26,11 +26,11 @@ class Main extends MY_Controller {
     $this->view = false;
 
     // Lets create our order
-    $sad = $this->input->post('shipping_address_different');
     $order = array(
+      'status' => 'new',
       'ip' => $this->input->ip_address(),
       'email' => $this->input->post('email'),
-      'opt_out' => $this->input->post('opt-in'),
+      'opt_in' => $this->input->post('opt_in-in'),
       'phone' => $this->input->post('phone'),
       'phone_extension' => $this->input->post('phone_extension'),
       'b_first_name' => $this->input->post('b_first_name'),
@@ -38,20 +38,21 @@ class Main extends MY_Controller {
       'b_address' => $this->input->post('b_address'),
       'b_apt' => $this->input->post('b_apt'),
       'b_city' => $this->input->post('b_city'),
-      'b_state' => $billingState,
+      'b_state_province' => $this->input->post('b_state_province'),
       'b_zip' => $this->input->post('b_zip'),
-      'b_country' => $this->input->post('country'),
-      's_first_name' => $sad ? $this->input->post('s_first_name') : $this->input->post('b_first_name'),
-      's_last_name' => $sad ? $this->input->post('s_last_name') : $this->input->post('b_last_name'),
-      's_address' => $sad ? $this->input->post('s_address') : $this->input->post('b_address'),
-      's_apt' => $sad ? $this->input->post('s_apt') : $this->input->post('b_apt'),
-      's_city' => $sad ? $this->input->post('s_city') : $this->input->post('b_city'),
-      's_state_province' => $sad ? $this->input->post('s_state_province') : $this->input->post('b_state_province'),
-      's_zip' => $sad ? $this->input->post('s_state_province') : $this->input->post('b_state_province'),
-      's_country' => $sad ? $this->input->post('s_state_province') : $this->input->post('b_state_province'),
+      'b_country' => $this->input->post('b_country'),
+      's_first_name' => $this->input->post('s_first_name'),
+      's_last_name' => $this->input->post('s_last_name'),
+      's_address' => $this->input->post('s_address'),
+      's_apt' => $this->input->post('s_apt'),
+      's_city' => $this->input->post('s_city') ,
+      's_state_province' => $this->input->post('s_state_province'),
+      's_zip' => $this->input->post('s_zip'),
+      's_country' => $this->input->post('s_state_province'),
       'payment_option' => $this->input->post('payment_option'),
-      'shipping_type' => $this->input->post('shipping'),
-      'coupon_code' =>  $this->input->post('coupon_code')
+      'shipping_type' => $this->input->post('shipping_type'),
+      'coupon_code' => $this->input->post('coupon_code'),
+      'card_id' => $this->input->post('card_id')
     );
 
     // Get pricing
@@ -67,11 +68,11 @@ class Main extends MY_Controller {
 
     // Create order lines
     $post_order_lines = array();
-    $post_order_lines = $this->input->post('order_line');
+    $post_order_lines = $this->input->post('order_lines');
 
     foreach($post_order_lines as $post_order_line) {
       if(is_numeric($post_order_line['qty']) && $post_order_line['qty'] > 0) {
-        $product = $this->product_model->get($post_order_line['id']);
+        $product = $this->product_model->get($post_order_line['product_id']);
         $order_line = array(
           'order_id' => $order_id,
           'qty' => $post_order_line['qty'],
@@ -84,7 +85,9 @@ class Main extends MY_Controller {
       }
     }
 
-    // Process order
+    $order = $this->order_model->get($order_id);
+
+    redirect('/main/confirmation/' . $order['string_id']);
 
   }
 
@@ -98,19 +101,21 @@ class Main extends MY_Controller {
 
   }
 
-  public function confirmation($order_id = false) {
+  public function confirmation($string_id = false) {
 
-    if($order_id && $this->data['order'] = $this->order_model->get($order_id)) {
+    $order = $this->order_model->with('order_lines')->get_by(array('string_id' => $string_id));
 
-      $this->data['order_lines'] = $this->order_line_model->get_many_by(array('order_id' => $order_id));
+    if($order) {
 
       $email = array(
-        'to' => $this->data['order']['email'],
-        'subject' => special_characters('Your WINBOT Order Confirmation #' . $this->data['order']['string_id']),
-        'data' => array('order' => $this->data['order'], 'order_lines' => $this->data['order_lines'] )
+        'to' => $order['email'],
+        'subject' => special_characters('Your WINBOT Order Confirmation #' . $order['string_id']),
+        'data' => array('order' => $order)
       );
 
+      $this->data['order'] = $order;
       $this->appemail->customer($email);
+      //exit();
 
      } else {
        redirect('/');
@@ -138,6 +143,58 @@ class Main extends MY_Controller {
     } else {
       $result['error'] = 'Coupon not valid.';
       $result['coupon'] = false;
+    }
+
+    echo json_encode($result);
+
+  }
+
+  public function tokenize_card() {
+
+    $this->view = false;
+
+    $result = array('card_id' => false, 'error' => false);
+
+    define("AUTHORIZENET_API_LOGIN_ID", "6Gn44kBR");
+    define("AUTHORIZENET_TRANSACTION_KEY", "36acB32fv8CA2KD2");
+    define("AUTHORIZENET_SANDBOX", true);
+
+    $customerProfile = new AuthorizeNet\Common\Type\Customer;
+    $customerProfile->merchantCustomerId = time() . mt_rand(1000000,9999999);
+    $customerProfile->email = $this->input->post('email');
+
+    $address = new AuthorizeNet\Common\Type\Address;
+    $address->firstName = $this->input->post('b_first_name');
+    $address->lastName = $this->input->post('b_last_name');
+    $address->zip = $this->input->post('b_zip');
+    $address->address = $this->input->post('b_address');
+
+    $paymentProfile = new AuthorizeNet\Common\Type\PaymentProfile;
+    $paymentProfile->customerType = "individual";
+    $paymentProfile->payment->creditCard->cardNumber = $this->input->post('card_number');
+    $paymentProfile->payment->creditCard->expirationDate =
+      $this->input->post('card_exp_year') . '-' . $this->input->post('card_exp_month');
+    $paymentProfile->payment->creditCard->cardCode = $this->input->post('card_code');
+    $paymentProfile->billTo = $address;
+
+    $customerProfile->paymentProfiles[] = $paymentProfile;
+
+    $request = new AuthorizeNet\Service\Cim\Request;
+    $response = $request->createCustomerProfile($customerProfile, 'liveMode');
+
+    if($response->isOk()) {
+      $card = array(
+        'authnet_customer_id' => $response->getCustomerProfileId(),
+        'authnet_payment_profile_id' => $response->getPaymentProfileId(),
+        'number' => substr($this->input->post('card_number'), -4),
+        'exp_year' => $this->input->post('card_exp_year'),
+        'exp_month' => $this->input->post('card_exp_month')
+      );
+      $result['card_id'] = $this->card_model->insert($card);
+
+    } else {
+      $messages = @$response->getValidationResponses();
+      $result['error'] = $messages ? $messages[0]->response_reason_text : 'Whoops, something broke.';
     }
 
     echo json_encode($result);

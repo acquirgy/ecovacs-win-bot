@@ -1,16 +1,16 @@
-    <!-- Facebook Script -->
-    <div id="fb-root"></div>
-    <!--Load the JavaScript SDK asynchronously-->
-    <script>(function (d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-    </script>
+<!-- Facebook Script -->
+<div id="fb-root"></div>
+<!--Load the JavaScript SDK asynchronously-->
+<script>(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
 
-    //     <script>
+<script>
 //     <!-- This script will track FB likes/unlikes/shares and send the data to Google Analytics. -->
 //         window.fbAsyncInit = function () {
 //             FB.Event.subscribe('edge.create', function (targetUrl) {
@@ -23,7 +23,7 @@
 //                 _gaq.push(['_trackSocial', 'facebook', 'send', targetUrl]);
 //             });
 //         };
-// </script>
+</script>
 
 <div class="w1 inner alt gradient">
     <div id="wrapper">
@@ -49,7 +49,9 @@
                     <article class="order-block">
                         <h2>Your Order Details:</h2>
                         <div class="holder">
-                            <p>Your Packaging is shipping via <span class="shipping-method"><?= $order['shipping_type'] ?></span></p>
+                            <p>
+                                Your Packaging is shipping via
+                                <span class="shipping-method"><?= $order['shipping_type'] ?></span></p>
                             <br />
                         </div>
                         <table class="details-table">
@@ -60,19 +62,26 @@
                                 </tr>
                                 <tr>
                                     <th style="text-align: left">Order Number:</th>
-                                    <td><span class="order-number"><?= $order['id'] ?></span></td>
+                                    <td><span class="order-number"><?= $order['string_id'] ?></span></td>
                                 </tr>
                                 <tr>
                                     <th style="text-align: left">Name:</th>
-                                    <td><span class="confirm-name"><?= $order['s_first_name'] . ' ' . $order['s_last_name'] ?></span></td>
+                                    <td>
+                                        <span class="confirm-name">
+                                            <?= $order['s_first_name'] . ' ' . $order['s_last_name'] ?>
+                                        </span>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th style="text-align: left">Address:</th>
-                                    <td><span class="confirm-address"><?= $order['s_address'] . ', ' . $order['s_city'] . ', ' . $order['s_state'] . ' ' . $order['s_zip'] ?></span></td>
+                                    <td>
+                                        <span class="confirm-address">
+                                            <?= $order['s_address'] . ', ' . $order['s_city'] . ', ' .
+                                                $order['s_state_province'] . ' ' . $order['s_zip'] ?></span></td>
                                 </tr>
                                 <tr>
-                                    <th style="text-align: left">Payment Type:</th>
-                                    <td><span class="confirm-payment"><?= $order['payment_type'] ?></span></td>
+                                    <th style="text-align: left">Payment Option:</th>
+                                    <td><span class="confirm-payment"><?= $order['payment_option'] ?></span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -89,18 +98,20 @@
                                 </tr>
                             </thead>
                         <tbody>
-                          <?php foreach($order_lines as $order_line) { ?>
+                          <?php foreach($order['order_lines'] as $order_line) { ?>
                           <tr>
                             <td><span><?= $order_line['product_title'] ?></span></td>
                             <td><span><?= $order_line['qty'] ?></span></td>
                             <td><?php if($order_line['product_price'] == 0) { ?>
                                 <span style="color:Red;font-weight:bold;">FREE</span>
                                 <?php } else if($order_line['product_price'] == 79.99) { ?>
-                                <span>5 payments of $79.99</span>
+                                    <span>5 payments of $79.99</span>
                                 <?php } else { ?>
-                                <span><?= $order_line['product_price'] ?></span>
+                                    <span>$<?= $order_line['product_price'] ?></span>
                                 <?php } ?></td>
-                            <td><span><?= $order_line['qty'] * $order_line['product_price'] ?></span></td>
+                            <td>
+                                <span>$<?= $order_line['qty'] * $order_line['product_price'] ?></span>
+                            </td>
                         </tr>
                         <?php } ?>
                         </tbody>
@@ -109,7 +120,7 @@
                             <tbody>
                                 <tr>
                                     <td colspan="3">Subtotal:</td>
-                                    <td>$<span class="confirm-subtotal"><?= number_format((float)$order['first_payment_subtotal'], 2, '.', ''); ?></span></td>
+                                    <td>$<span class="confirm-subtotal"><?= number_format((float)$order['subtotal'], 2, '.', ''); ?></span></td>
                                 </tr>
                                 <tr>
                                     <td colspan="3">Discount:</td>
@@ -125,7 +136,7 @@
                                 </tr>
                                 <tr class="total">
                                     <td colspan="3">Total:</td>
-                                    <td>$<span class="confirm-total"><?= number_format((float)$order['first_payment_total'], 2, '.', ''); ?></span></td>
+                                    <td>$<span class="confirm-total"><?= number_format((float)$order['total'], 2, '.', ''); ?></span></td>
                                 </tr>
                             </tbody>
                         </table>

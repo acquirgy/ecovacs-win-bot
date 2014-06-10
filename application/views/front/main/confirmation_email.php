@@ -65,7 +65,7 @@
                                         <p class="MsoNormal">
                                             <strong>Bill To: </strong><?=$order['b_first_name'] ?>&nbsp;<?=$order['b_last_name'] ?>
                                             <br />
-                                            <strong>Order Number: </strong><?=$order['id'] ?>
+                                            <strong>Order Number: </strong><?=$order['string_id'] ?>
                                         </p>
                                     </td>
                                     <td width="50%" style='width: 50.0%; padding: 7.5pt 7.5pt .75pt .75pt'>
@@ -84,7 +84,7 @@
                                      <strong>Ship To:</strong><br />
                                      <?=$order['s_first_name'] ?>&nbsp;<?=$order['s_last_name'] ?><br />
                                      <?=$order['s_address'] ?> <?=$order['s_apt'] ? $order['s_apt'] : '' ?><br />
-                                     <?=$order['s_city'] . ', ' . $order['s_state'] . ' ' . $order['s_zip']?>
+                                     <?=$order['s_city'] . ', ' . $order['s_state_province'] . ' ' . $order['s_zip']?>
                                  </p>
                              </td>
                              <td width="50%" style='width: 50.0%; padding: 7.5pt 7.5pt .75pt .75pt'>
@@ -129,7 +129,7 @@
                                 </p>
                             </th>
                         </tr>
-                        <?php foreach($order_lines as $item) { ?>
+                        <?php foreach($order['order_lines'] as $item) { ?>
                         <tr>
                             <td style='border: inset #8b6b3f 1.0pt; padding: 1.5pt 1.5pt 1.5pt 1.5pt'>
                                 <p class='MsoNormal' style='text-align: left;'><?= $item['product_title'] ?></p>
@@ -153,7 +153,7 @@
                             </td>
                             <td style='border: inset #8b6b3f 1.0pt; padding: 1.5pt 1.5pt 1.5pt 1.5pt'>
                                 <p class="MsoNormal" style='text-align: right'>
-                                    <?= number_format((float)$order['first_payment_subtotal'], 2, '.', '');?>
+                                    <?= number_format((float)$order['subtotal'], 2, '.', '');?>
                                 </p>
                             </td>
                         </tr>
@@ -201,7 +201,7 @@
                             </td>
                             <td style='border: inset #8b6b3f 1.0pt; padding: 1.5pt 1.5pt 1.5pt 1.5pt'>
                                 <p class="MsoNormal" align="right" style='text-align: right'>
-                                    <?= number_format((float)$order['first_payment_total'], 2, '.', ''); ?>
+                                    <?= number_format((float)$order['total'], 2, '.', ''); ?>
                                 </p>
                             </td>
                         </tr>
