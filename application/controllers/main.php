@@ -101,6 +101,17 @@ class Main extends MY_Controller {
      }
   }
 
+  public function send_email($string_id) {
+    $this->view = false;
+    $order = $this->order_model->with('order_lines')->get_by(array('string_id' => $string_id));
+    $email = array(
+      'to' => $order['email'],
+      'subject' => special_characters('Your WINBOT Order Confirmation #' . $order['string_id']),
+      'data' => array('order' => $order)
+    );
+    $this->appemail->customer($email);
+  }
+
   // AJAX CALLS //
 
   public function get_pricing() {

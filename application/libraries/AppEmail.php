@@ -24,6 +24,7 @@ class AppEmail extends MY_Controller {
     $this->mail->Username = 'customerservice@winbot7.com';
     $this->mail->Password = 'w1nP@ss!';
     $this->mail->From = 'customerservice@winbot7.com';
+    $this->mail->FromName = 'winbot7.com';
 
     $this->config = array(
       'mailtype' => 'html',
