@@ -1,4 +1,10 @@
-  <?= form_open('/main/submit', array('class' => 'cart-form')) ?>
+<script>
+    var stateOptions = <?= json_encode(states()) ?>;
+    var provinceOptions = <?= json_encode(provinces()) ?>;
+    var regionOptions = { 'PR' : 'Puerto Rico' };
+</script>
+
+  <?= form_open('/main/get_pricing', array('class' => 'cart-form')) ?>
     <div class="w1 inner gradient">
         <div id="wrapper">
             <!-- header -->
@@ -36,8 +42,8 @@
                               <?php foreach($products as $product) { ?>
                               <tr class="product-<?= $product['id'] ?> hidden" data-price="<?= $product['price'] ?>">
                                   <td>
-                                    <?= form_hidden('order_line[' . $product['id'] . '][id]', $product['id']) ?>
-                                    <?= form_input('order_line[' . $product['id'] . '][qty]', 0, 'class="qty"') ?>
+                                    <?= form_hidden('order_lines[' . $product['id'] . '][product_id]', $product['id']) ?>
+                                    <?= form_input('order_lines[' . $product['id'] . '][qty]', 0, 'class="qty"') ?>
                                 </td>
                                 <td><?= $product['title'] ?></td>
                                 <td>
@@ -128,91 +134,90 @@
                                             <input id="confirmEmailField" name="confirmEmail" type="email" class="required email" equalTo="#email"/>
                                         </div>
                                     </div>
+                                    <div class="billing-address">
+                                        <div class="row">
+                                            <?= form_error('b_first_name');?>
+                                            <label for="b_first_name">First Name:</label>
+                                            <div class="int-holder">
+                                               <input id="b_first_name" name="b_first_name" type="text" class="required"/>
+                                           </div>
+                                        </div>
+                                        <div class="row">
+                                            <?= form_error('b_last_name');?>
+                                            <label for="b_last_name">Last Name:</label>
+                                            <div class="int-holder">
+                                            <input id="b_last_name" name="b_last_name" type="text" class="required"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label for="b_country">Country:</label>
+                                            <div class="int-holder">
+                                                <select id="b_country" name="b_country" class="text country" style="width:137px;">
+                                                    <option value="United States" selected>United States</option>
+                                                    <option value="Canada" >Canada</option>
+                                                    <option value="Puerto Rico">Puerto Rico</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <?= form_error('b_address');?>
+                                            <label for="b_address">Address:</label>
+                                            <div class="int-holder">
+                                                <input id="b_address" name="b_address" type="text" class="required check-PObox"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <?= form_error('b_apt');?>
+                                            <label for="b_apt">Suite or Apt:</label>
+                                            <div class="int-holder">
+                                                <input id="b_apt" name="b_apt" placeholder="optional" type="text"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <?= form_error('b_city');?>
+                                            <label for="b_city">City:</label>
+                                            <div class="int-holder">
+                                                <input ID="b_city" name="b_city" type="text" class="required"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label for="b_state_province">State/Province:</label>
+                                            <div class="int-holder">
+                                                <select id="b_state_province" name="b_state_province">
+                                                    <option value="">loading...</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label for="b_zip">Zip/Postal Code:</label>
+                                            <div class="int-holder">
+                                                <input type="text" id ="b_zip" name="b_zip" class="zip"/>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="row">
-                                        <?= form_error('b_first_name');?>
-                                        <label for="b_first_name">First Name:</label>
+                                        <label for="phone">Phone Number:</label>
                                         <div class="int-holder">
-                                           <input id="b_first_name" name="b_first_name" type="text" class="required"/>
-                                       </div>
-                                   </div>
-                                   <div class="row">
-                                    <?= form_error('b_last_name');?>
-                                    <label for="b_last_name">Last Name:</label>
-                                    <div class="int-holder">
-                                        <input id="b_last_name" name="b_last_name" type="text" class="required"/>
+                                            <input name="phone" placeholder="Enter 10 digits only" type="text" class="required phone" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <label for="Country">Country:</label>
-                                    <div class="int-holder">
-                                        <select id="Country" name="Country" class="text" style="width:137px;">
-                                            <option value="United States" selected>United States</option>
-                                            <option value="Canada" >Canada</option>
-                                            <option value="Puerto Rico" >Puerto Rico</option>
-                                        </select>
+                                    <div class="row">
+                                        <label for="tbxExt">Extension:</label>
+                                        <div class="int-holder">
+                                            <input id="tbxExt" name="phone_extension" placeholder="optional" type="text" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <?= form_error('b_address');?>
-                                    <label for="b_address">Address:</label>
-                                    <div class="int-holder">
-                                        <input id="b_address" name="b_address" type="text" class="required check-PObox"/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <?= form_error('b_apt');?>
-                                    <label for="b_apt">Suite or Apt:</label>
-                                    <div class="int-holder">
-                                        <input id="b_apt" name="b_apt" placeholder="optional" type="text"/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <?= form_error('b_city');?>
-                                    <label for="b_city">City:</label>
-                                    <div class="int-holder">
-                                        <input ID="b_city" name="b_city" type="text" class="required"/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <label for="state_province">State/Province:</label>
-                                    <div class="int-holder" id="state_province">
-                                        <?= form_dropdown('b_state', states(), null, 'class="b_states required"') ?>
-                                        <?= form_dropdown('b_province', provinces(), null, 'class="b_province hidden"') ?>
 
-                                        <select id="b_region" name="b_region" class="text hidden">
-                                            <option value="PR">Puerto Rico</option>
-                                        </select>
+                                    <!-- check-box -->
+                                    <div class="check-box">
+                                        <input id="shipping_address_different" name="shipping_address_different" type="checkbox"/>
+                                        <label for="shipping_address_different">Shipping Address is different</label>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <label for="b_zip">Zip/Postal Code:</label>
-                                    <div class="int-holder">
-                                        <input type="text" id ="b_zip" name="b_zip" class="zip"/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <label for="phone">Phone Number:</label>
-                                    <div class="int-holder">
-                                        <input name="phone" placeholder="Enter 10 digits only" type="text" class="required phone" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <label for="tbxExt">Extension:</label>
-                                    <div class="int-holder">
-                                        <input id="tbxExt" name="phone-extension" placeholder="optional" type="text" />
-                                    </div>
-                                </div>
-                                <!-- check-box -->
-                                <div class="check-box">
-                                    <input id="ckbxAddressDiffer" name="ckbxAddressDiffer" type="checkbox"/>
-                                    <label for="ckbxAddressDiffer">Shipping Address is different</label>
-                                </div>
-                            </div>
-                            <br />
-                            <!-- Shipping Address Block -->
-                            <div id="pnlShipAddress" class="hidden shipping-address">
+                                <br />
+                                <!-- Shipping Address Block -->
 
-                                <div class="block">
+                                <div class="block shipping-address hidden">
                                     <div class="row">
                                         <?= form_error('s_first_name');?>
                                         <label for="s_first_name">Ship First Name:</label>
@@ -229,51 +234,48 @@
                                     <div class="row">
                                         <label for="s_country">Country:</label>
                                         <div class="int-holder">
-                                         <select id="s_country" name="s_country" class="text">
-                                            <option value="United States" selected="selected">United States</option>
-                                            <option value="Canada">Canada</option>
-                                            <option value="Puerto Rico">Puerto Rico</option>
-                                        </select>
+                                            <select id="s_country" name="s_country" class="text country">
+                                                <option value="United States" selected="selected">United States</option>
+                                                <option value="Canada">Canada</option>
+                                                <option value="Puerto Rico">Puerto Rico</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <label for="s_address">Address:</label>
-                                    <div class="int-holder">
-                                        <input id="s_address" type="text" name="s_address" class="required">
+                                    <div class="row">
+                                        <label for="s_address">Address:</label>
+                                        <div class="int-holder">
+                                            <input id="s_address" type="text" name="s_address" class="required">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <label for="s_apt">Suite or Apt:</label>
-                                    <div class="int-holder">
-                                        <input id="s_apt" type="text" name="s_apt" placeholder="optional" />
+                                    <div class="row">
+                                        <label for="s_apt">Suite or Apt:</label>
+                                        <div class="int-holder">
+                                            <input id="s_apt" type="text" name="s_apt" placeholder="optional" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <label for="s_city">City:</label>
-                                    <div class="int-holder">
-                                       <input id="s_city" type="text" name="s_city" class="required">
+                                    <div class="row">
+                                        <label for="s_city">City:</label>
+                                        <div class="int-holder">
+                                           <input id="s_city" type="text" name="s_city" class="required">
+                                       </div>
+                                    </div>
+                                    <div class="row">
+                                        <label for="s_state_province">State/Province:</label>
+                                        <div class="int-holder">
+                                            <select name="s_state_province" id="s_state_province">
+                                                <option value="">loading...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label for="s_zip">Zip/Postal Code:</label>
+                                        <div class="int-holder">
+                                           <input id="s_zip" type="text" name="s_zip" class="zip">
+                                           <span class="hidden zip-error error">Please enter a valid zip code</span>
+                                       </div>
                                    </div>
-                               </div>
-                               <div class="row">
-                                <label for="shipState">State/Province:</label>
-                                <div class="int-holder" id="Ship_state_province">
-                                    <?= form_dropdown('s_state', states(), null, 'class="s_states"') ?>
-                                    <?= form_dropdown('s_province', provinces(), null, 'class="s_province hidden"') ?>
-                                    <select id="s_region" name="s_region" class="text hidden">
-                                        <option value="PR">Puerto Rico</option>
-                                    </select>
                                 </div>
                             </div>
-                            <div class="row">
-                                <label for="s_zip">Zip/Postal Code:</label>
-                                <div class="int-holder">
-                                   <input id="s_zip" type="text" name="s_zip" class="zip">
-                                   <span class="hidden zip-error error">Please enter a valid zip code</span>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
                <!-- end column 1-->
                <!-- column -->
                <div class="column same-height">
@@ -282,12 +284,12 @@
                     <h2>Payment Options:</h2>
                     <a href="#popup8" class="link lightbox" style="margin: -23px 140px 10px"><small>See Details</small></a>
                     <div class="row">
-                        <input id="multipay" name="payment-option" type="radio" value="multipay" checked="checked"/>
-                        <label id="lblMultiPayRadio" for="multiPay">Multi-Pay: 5 Payments of $79.99</label>
+                        <input id="multipay" name="payment_option" type="radio" value="multipay" checked="checked"/>
+                        <label id="lblMultiPayRadio" for="multipay">Multi-Pay: 5 Payments of $79.99</label>
                     </div>
                     <div class="row">
-                        <input id="singlepay" name="payment-option" type="radio" value="singlepay"/>
-                        <label id="lblSinglePayRadio" for="singlePay">Single Pay $399.95"</label>
+                        <input id="singlepay" name="payment_option" type="radio" value="singlepay"/>
+                        <label id="lblSinglePayRadio" for="singlepay">Single Pay $399.95"</label>
                     </div>
                     <div id="Note">
                         <strong>Wait! Choose Single Pay and Receive FREE Shipping!</strong>
@@ -368,16 +370,16 @@
                 </div>
                 <!-- check-box -->
                 <div class="check-box">
-                    <input id="receiveEmail" type="checkbox" name="receiveEmail"/>
-                    <label for="receiveEmail">Receive News &amp; Promotions by Email</label>
-                    <input id="opt-out" type="hidden" value="1" name="opt-in" />
+                    <input id="opt_in" type="checkbox" name="opt_in"/>
+                    <label for="opt_in">Receive News &amp; Promotions by Email</label>
                 </div>
 
             </div>
             <div style="margin: 15px 0 0 -27px; ">
-                <label for="discount-code">Coupon Code</label>
-                <input class="discount-code" name="discount-code" type="text" style="width:75px;" />&nbsp;&nbsp;
-                <button class="submit-discount" style="color:#8B6B3F;">Apply</button>
+                <label for="coupon_code_temp">Coupon Code</label>
+                <input type="text" id="coupon_code_temp" name="coupon_code_temp" value="">
+                <input name="coupon_code" id="coupon_code" type="hidden" value=""/>
+                <button class="submit-coupon" style="color:#8B6B3F;">Apply</button>
             </div>
         </div>
     </div>
@@ -433,46 +435,40 @@
                     </table>
                 </div>
 
-                <table id="Totals">
+                <table id="totals">
                     <tfoot>
                         <tr>
-                            <td colspan="3">Subtotal:</td>
+                            <td>Subtotal:</td>
                             <td>$<span class="sub-total"></span></td>
-                            <input id="sub-total" name="sub-total" type="hidden" value="0.00" />
-                            <input id="taxable-subtotal" name="taxable-subtotal" type="hidden" value="0.00" />
                         </tr>
                         <tr class="discount-row hidden">
-                            <td colspan="3">Discount Amount:</td>
+                            <td>Discount Amount:</td>
                             <td>$<span class="discount-total"></span></td>
-                            <input id="discount-total" name="discount-total" type="hidden" value="0.00" />
                         </tr>
                         <tr>
-                            <td colspan="3">Shipping and Handling:</td>
+                            <td>Shipping and Handling:</td>
                             <td><span class="shipping-total"></span></td>
-                            <input id="shipping-total" name="shipping-total" type="hidden" value="0.00" />
                         </tr>
                         <tr>
-                            <td colspan="3">*Estimated Taxes:</td>
+                            <td>*Estimated Taxes:</td>
                             <td>$<span class="tax"></span><input type="hidden" name="tax-total" value="0.00" /></td>
-                            <input id="tax-total" name="tax-total" type="hidden" value="0.00" />
-                            <input id="tax-rate" name="tax-rate" type="hidden" value="0.00" />
                         </tr>
                         <tr>
-                            <td colspan="3" >Cart Total:</td>
+                            <td>Cart Total:</td>
                             <td>$<span class="total"></span></td>
-                             <input id="total" name="total" type="hidden" value="0.00" />
-                             <input id="grandtotal" name="grandtotal" type="hidden" value="0.00" />
                         </tr>
                     </tfoot>
                 </table>
             </div>
         </div>
-        <img src="/assets/images/spinner.gif" class="spinner" style="display: none;" />
+        <input type="image" class="submit-order button" src="/assets/images/btn-continue.png"  />
 <!--         <a href="#popup7" class="lightbox" id="firstbutton" onclick="_gaq.push(['_trackEvent', 'Cart', 'Click', 'Add to Cart Get Yours Now']);">
             <img src="/assets/images/button-large.png" width="329" height="55" alt="GET YOURS NOW!" />
         </a> -->
-
-        <input type="image" name="btnContinue" id="btnContinue" class="button"  style="height:46px;width:272px;" src="/assets/images/btn-continue.png"  />
+        <div class="form-loader">
+            <img src="/assets/images/spinner.gif" class="spinner" />
+            <p>Loading...</p>
+        </div>
         <br />
         <span id="result" style="color:Red;"></span>
         <span style="font-size:7pt;">*Final taxes are calculated upon shipment and will be reflected in your Shipping Confirmation email.</span>
@@ -792,41 +788,3 @@
     </div>
 
 <?= form_close() ?>
-
-<div id="fb-root"></div>
-<script>(function (d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
-
-<script type="text/javascript">
-
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-40695548-1']);
-_gaq.push(['_trackPageview', location.pathname + location.search + location.hash]);
-
-(function () {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
-</script>
-
-<script type="text/javascript">
-
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-40695548-1']);
-_gaq.push(['_trackPageview']);
-
-(function () {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
-</script>

@@ -323,3 +323,14 @@ function clean_phone($number) {
   $number = str_replace(')','',$number);
   return $number;
 }
+
+function find_in_array($searched_value, $key, $array) {
+  foreach ($array as $k => $values) {
+    foreach($values as $value_key => $value) {
+      if($value_key == $key && $searched_value == $value) {
+        return $values;
+      }
+    }
+  }
+  return null;
+}

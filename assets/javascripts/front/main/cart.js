@@ -6,7 +6,7 @@ $(document).ready( function() {
   var taxable_subTotal = 0;
   var grand_total = 0;
   var discountTotal = 0;
-  var discountCode = {};
+  var coupon = {};
   var shippingTotal = 0.00;
   var outsideShipping = false;
   var shiptoBilling = true;
@@ -43,28 +43,22 @@ $(document).ready( function() {
   // Start off with main item in cart
   addMultipayWinbot();
 
+  populateStateProvinces();
+
   // Add Upsell button click
   $('.add').click( function() {
-
     var productId = $(this).data('id');
-    console.log('addProduct', productId);
-
-    row = $('.order-lines tr.product-' + productId);
-
+    var row = $('.order-lines tr.product-' + productId);
     // Show the row
     row.show();
-
     // Find the qty input in that row and upate its value
     var currentValue = parseInt(row.find('.qty').val());
     var newValue = currentValue + 1;
     var price = parseFloat(row.data('price'));
     row.find('.qty').val(newValue);
     $(".rowtotal-" + productId).html(newValue * price);
-
     updatePricing();
-
-    var title = $(this).siblings("h2").html();
-    _gaq.push(['_trackEvent', 'Cart', 'Add Upsell', title]);
+    _gaq.push(['_trackEvent', 'Cart', 'Add Upsell', $(this).siblings("h2").html()]);
 
   });
 
@@ -92,160 +86,64 @@ $(document).ready( function() {
      updatePricing();
    });
 
-  // copy billing address to shipping fields
-  $('#b_first_name').change(function(){
-    if (shiptoBilling == true)
-    $('#s_first_name').val($('#b_first_name').val());
-  })
-  $('#b_last_name').change(function(){
-    if (shiptoBilling == true)
-    $('#s_last_name').val($('#b_last_name').val());
-  })
+  // Discount Code Applied
+  $('.submit-coupon').on('click', function(e) {
+    e.preventDefault();
+    applyCoupon();
+  });
 
-  $('#b_address').change(function(){
-    if (shiptoBilling == true) {
-      $('#s_address').val($('#b_address').val());
-    }
-    if ($('input[name=discount-code]').val().length > 1 ) {
-      applyCoupon();
-    }
-  })
-  $('#b_apt').change(function(){
-    if (shiptoBilling == true)
-    $('#s_apt').val($('#b_apt').val());
-  })
-  $('#b_city').change(function(){
-    if (shiptoBilling == true)
-    $('#s_city').val($('#b_city').val());
-  })
-  $('.b_states').change( function() {
-    if (shiptoBilling == true) { $('.s_states').val($('.b_states').val());}
+  // Lets populate the state_province dropdown with options based on country
+  $('.country').on('change', function()  {
+    populateStateProvinces();
+  });
+
+  $('#b_state_province').on('change', function() {
     updatePricing();
   });
-  $('.b_province').change(function(){
-    if (shiptoBilling == true) {$('.s_province').val($('.b_province').val());}
-  })
-  $('#b_zip').change(function(){
-    if (shiptoBilling == true)
-    $('#s_zip').val($('#b_zip').val());
-  })
 
-  // Shipping state list
-  $('.s_states').change( function() {
-    updatePricing();
+  // Update shipping address in the background as they type in the billing address
+  $('.billing-address input, .billing-address select').on('keyup paste change', function() {
+    if(!$('#shipping_address_different').is(':checked')) {
+      var value = $(this).val();
+      var fieldName = $(this).attr('id').substr(2);
+      $('.shipping-address #s_' + fieldName).val(value);
+    }
+  });
+
+  // Deal with customer checking and unchecking the shipping address is different checkbox
+  $('#shipping_address_different').on('click', function() {
+    var isDifferent = $(this).is(':checked');
+    $('.shipping-address input, .shipping-address select').each( function() {
+      if(isDifferent) {
+        $(this).val('');
+        $('.shipping-address').show();
+      } else {
+        var fieldName = $(this).attr('id').substr(2);
+        var value = $('.billing-address #b_' + fieldName).val();
+        $(this).val(value);
+        $('.shipping-address').hide();
+      }
+    });
   });
 
   // Remove button is clicked
   $('.remove').click( function() {
     var productId = $(this).data('id');
-    console.log('removeProduct',productId);
-
-    row = $('.order-lines tr.product-' + productId);
-
+    var row = $('.order-lines tr.product-' + productId);
     // Hide the row
     row.hide();
-
     // Find the qty input in that row and upate its value to 0
     row.find('.qty').val(0);
-
     updatePricing();
-
-  });
-
-  // Billing Country selection change:
-  $('#Country').change( function() {
-    // find out value of the country we changed to
-    var country = $(this).val();
-
-    // if country is U.S., show it and hide other 2 drop down lists
-    if (country == 'United States') {
-      $('.b_states').show();
-      $('.b_province').hide();
-      $('.b_province').removeClass('required');
-      $('#b_region').hide();
-      if (shiptoBilling == true) {
-        $('.s_states').show();
-        $('.s_province').hide();
-        $('#s_region').hide();
-      }
-    } else {
-      $('.b_states').hide();                    // Hide the billing states list
-      $('.b_states').removeClass('required');
-      if (shiptoBilling == true) {
-          $('.s_states').hide();                // Hide the shipping states list
-      }
-
-      // if country is Canada...
-      if (country == 'Canada') {
-        $('.b_province').show();
-        $('.b_province').addClass('required');
-        $('#b_region').hide();
-        if (shiptoBilling == true)  {
-          $('.s_province').show();
-          $('#s_region').hide();
-        }
-      }
-      // if country is Puerto Rico...
-      if (country == 'Puerto Rico') {
-        $('#b_region').show();
-        $('.b_province').hide();
-        $('.b_province').removeClass('required');
-        if (shiptoBilling == true)  {
-          $('#s_region').show();
-          $('.s_province').hide();
-        }
-      }
-    }
-
-    if (shiptoBilling == true) {$('#s_country').val(country);}
-
-    updatePricing();
-
-  });
-  // Shipping Country selection change:
-  $('#s_country').change( function() {
-    // find out value of the country we changed to
-    var country = $(this).val();
-
-    // if country is U.S., show it and hide other 2 drop down lists
-    if (country == 'United States') {
-      $('.s_states').show();
-      $('.s_province').hide();
-      $('.s_province').removeClass('required');
-      $('#s_region').hide();
-    } else {
-      $('.s_states').hide();                    // Hide the shipping states list
-      $('.s_states').removeClass('required');
-
-      // if country is Canada...
-      if (country == 'Canada') {
-        $('.s_province').show();
-        $('.s_province').addClass('required');
-        $('#s_region').hide();
-      }
-      // if country is Puerto Rico...
-      if (country == 'Puerto Rico') {
-        $('#s_region').show();
-        $('.s_province').hide();
-        $('.s_province').removeClass('required');
-      }
-    }
-
-    updatePricing();
-
   });
 
   //Payment Options
   $('#multipay').click( function() {
     addMultipayWinbot();
-    $('#Note').show();
-    updatePricing();
   });
 
   $('#singlepay').click( function() {
     addSinglepayWinbot();
-    $('#Note').hide();
-    updatePricing();
   });
 
   $('#rushShip').click( function() {
@@ -260,41 +158,13 @@ $(document).ready( function() {
     $('.rush').addClass('hidden');
   });
 
-  // Shipping Address Different is checked
-  $('#ckbxAddressDiffer').on('click', function() {
-    if ($(this).is(':checked')) {
-      shiptoBilling = false;
-      $('.shipping-address').slideDown();
-      $('.shipping-address input').addClass('required');
-      $('.shipping-address #s_apt').removeClass('required');
-      $('#s_address').addClass('check-PObox');
-      $('#b_address').removeClass('check-PObox');
-    } else {
-      shiptoBilling = true;
-      $('.shipping-address').slideUp();
-      $('.shipping-address input').removeClass('required');
-      $('#s_address').removeClass('check-PObox');
-      $('#b_address').addClass('check-PObox');
-    }
-
-    updatePricing();
-  })
-
-  // "Receive News & Promotions by Email" checked
-  $('#receiveEmail').on('click', function() {
-    if ($(this).is(':checked')) {
-      $('#opt-out').val('0');
-    } else {
-      $('#opt-out').val('1');
-    }
-
-  })
-
   function addMultipayWinbot() {
 
-    rowMultipay = $('.order-lines tr.product-2');
-    rowSinglepay = $('.order-lines tr.product-1');
-    rowFreeShipping = $('.order-lines tr.product-7');
+    $('#Note').show();
+
+    var rowMultipay = $('.order-lines tr.product-2');
+    var rowSinglepay = $('.order-lines tr.product-1');
+    var rowFreeShipping = $('.order-lines tr.product-7');
 
     // Show the row
     rowMultipay.show();
@@ -312,9 +182,11 @@ $(document).ready( function() {
 
   function addSinglepayWinbot() {
 
-    rowMultipay = $('.order-lines tr.product-2');
-    rowSinglepay = $('.order-lines tr.product-1');
-    rowFreeShipping = $('.order-lines tr.product-7');
+    $('#Note').hide();
+
+    var rowMultipay = $('.order-lines tr.product-2');
+    var rowSinglepay = $('.order-lines tr.product-1');
+    var rowFreeShipping = $('.order-lines tr.product-7');
 
     // Show the row
     rowMultipay.hide();
@@ -330,114 +202,85 @@ $(document).ready( function() {
     updatePricing();
   }
 
-  function validateCoupon() {
-    // Check expiration of discount code
-    var couponDate = new Date(discountCode.expiration);
-    var today = new Date();
-    if (today > couponDate) {
-      $('.discount-code').val('');    // clear coupon code
-      discountCode = {};
-      alert('Coupon has expired');
-      return false;
-    }
-    if (discountCode.message == "discount used") {
-       $('.discount-code').val('');    // clear coupon code
-       discountCode = {};
-       alert('Coupon code already used for this address, discount not applied');
-       return false;
-    }
-  }
-
   function applyCoupon() {
-    console.log('BEFORE ajaxCall');
+    var couponCode = $('#coupon_code_temp').val();
+    var address = $('#b_address').val();
+    var city = $('#b_city').val();
 
-    var discountCodeSubmitted = $('input[name=discount-code]').val();
-    if($('#b_address').val().length > 0 && $('#b_address').val() != '') {
-      var address = $('#b_address').val();
-    } else {
-      alert('Billing Address must be filled in');
+    if(!couponCode || !address || !city) {
+      $('#coupon_code').val('');
+      alert('Billing Address and Coupon Code must be filled in.');
       return false;
     }
-    $('.totals').hide();
-    $('.spinner').show();
+
+    showFormLoader(true);
+
     $.ajax({
-      url: '/index.php/main/get_discount/' + discountCodeSubmitted + '/' + encodeURIComponent(address),
+      url: '/index.php/main/get_coupon/',
+      data: $('form').serialize(),
+      type: 'POST',
       dataType: 'JSON',
       success: function(result) {
-        discountCode = result ? result : {};
-        validateCoupon();
-        updatePricing();
-        $('.spinner').hide();
-        $('.totals').show();
+        if(result.coupon && !result.error) {
+          $('#coupon_code').val(couponCode);
+          updatePricing();
+        } else {
+          showFormLoader(false);
+          alert(result.error);
+        }
       }
     });
   }
 
-  // Discount Code Applied
-  $('.submit-discount').click( function(event) {
-    event.preventDefault();
+  function populateStateProvinces() {
 
-    applyCoupon();
-  });
+    var bCountry = $('#b_country').val();
+    if(bCountry == 'United States') var options = stateOptions;
+    if(bCountry == 'Canada') var options = provinceOptions;
+    if(bCountry == 'Puerto Rico') var options = regionOptions;
+    $('#b_state_province').empty().append(createHtmlOptions(options));
+
+    var sCountry = $('#s_country').val();
+    if(sCountry == 'United States') var options = stateOptions;
+    if(sCountry == 'Canada') var options = provinceOptions;
+    if(sCountry == 'Puerto Rico') var options = regionOptions;
+    $('#s_state_province').empty().append(createHtmlOptions(options));
+
+  }
+
+  function createHtmlOptions(options) {
+    htmlOptions = '';
+    for(var key in options) {
+      htmlOptions += '<option value="' + key + '">' + options[key] + '</option>';
+    }
+    return htmlOptions;
+  }
+
 
   function updatePricing() {
 
-    total = subTotal = discountTotal = taxable_subTotal = 0;
+    showFormLoader(true);
 
-    // Loop through our products and add up price
-    $('.preview-table .order-lines tbody tr').each( function() {
-      var qty = $(this).find('input.qty').val();
-      var price = $(this).data('price');
-      subTotal = subTotal + (qty * price);        // Get the first payment subtotal
+    $.ajax({
+      type: 'POST',
+      url: '/main/get_pricing',
+      data: $('form').serialize(),
+      dataType: 'JSON',
+      success: function(result) {
+        showFormLoader(false);
+        console.log(result);
+        // Adjust dom with update totals
+        $('.sub-total').empty().append(result.subtotal.toFixed(2));
+        $('.discount-total').empty().append(result.discount_total.toFixed(2));
+        $('.discount-row').toggle(result.discount_total > 0 ? 1 : 0);
+        $('.tax').empty().append(result.tax_total.toFixed(2));
+        $('.shipping-total').empty().append(result.shipping_total.toFixed(2));
+        $('.total').empty().append(result.total.toFixed(2));
+      }
 
-      // Get the subtotal with full price of winbot in order to calculate tax
-      var price2 = $(this).hasClass('product-2') ? 399.95 : $(this).data('price');      // If item is the multipay Winbot, change price to 399.95
-      console.log(price2);
-      taxable_subTotal += (qty * price2);
     });
 
-    // Figure out discount codes
-    if(discountCode.type == 'flat') {
-      discountTotal = parseFloat(discountCode.value);
-    }
-    if(discountCode.type == 'percent') {
-      discountTotal = parseFloat(discountCode.value) * subTotal;
-    }
 
-    taxrate = getTaxRate();
-    taxTotal = taxrate * taxable_subTotal;
-    shippingTotal = getShippingAmount();
-    total = subTotal + taxTotal + shippingTotal - discountTotal;
-    grand_total = taxable_subTotal + taxTotal + shippingTotal - discountTotal;
-
-    // Adjust dom with update totals
-    $('.sub-total').empty().append(subTotal.toFixed(2));
-    $('#sub-total').val(subTotal);
-    $('.discount-total').empty().append(discountTotal.toFixed(2));
-    if (discountTotal > 0) {$('.discount-row').show();}
-    $('#discount-total').val(discountTotal);
-    $('.tax').empty().append(taxTotal.toFixed(2));
-    $('#tax-total').val(taxTotal);
-    $('#tax-rate').val(taxrate);
-    $('.shipping-total').empty().append('$' + shippingTotal.toFixed(2));
-    $('#shipping-total').val(shippingTotal);
-    $('.total').empty().append(total.toFixed(2));
-    $('#total').val(total);
-    $('#grandtotal').val(grand_total);
-    $('#taxable-subtotal').val(taxable_subTotal);
-  }
-
-  function getTaxRate() {
-    taxrate = 0;
-
-    if ($('#ckbxAddressDiffer').is(':checked')) {       // If Shipping Address Different is checked
-      if ($('#s_country').val() == 'United States')
-        {taxrate = ($('.s_states').val() == 'CA') ? 0.08 : 0;}
-    } else {
-      if ($('#Country').val() == 'United States')
-        {taxrate = ($('.b_states').val() == 'CA') ? 0.08 : 0;}
-    }
-    return taxrate;
   }
 
   function getShippingAmount() {
@@ -505,6 +348,14 @@ $(document).ready( function() {
           outsideShipping = true;
         }
       }
+  }
+
+  function showFormLoader(show) {
+
+    $('#totals').toggle(!show);
+    $('.submit-order').toggle(!show);
+    $('.form-loader').toggle(show);
+
   }
 
 });
