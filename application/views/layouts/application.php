@@ -6,13 +6,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!--   <meta name="description" content=" I just got my WINBOT™ Window Cleaning Robot – Check it out!"/>
+    <meta name="description" content=" I just got my WINBOT™ Window Cleaning Robot – Check it out!"/>
     <meta property="og:title" content=" WINBOT™ The Revolutionary Window Washing Robot" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://www.Winbot7.com/" />
     <meta property="og:description" content="I just got my WINBOT™ Window Cleaning Robot – Check it out!"/>
     <meta property="og:image" content="https://www.Winbot7.com/images/winbot-Pin.jpg" />
-    <meta property="og:site_name" content="Winbot™ Window Washing Robot" /> -->
+    <meta property="og:site_name" content="Winbot™ Window Washing Robot" />
 
     <title>EcovacsWinBot</title>
     <link href="/assets/stylesheets/shared/normalize.css" rel="stylesheet" type="text/css" />
