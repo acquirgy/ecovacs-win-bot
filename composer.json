@@ -1,0 +1,5 @@
+{
+  "require": {
+    "cystbear/authorizenet-php-sdk": "0.1.*"
+  }
+}
