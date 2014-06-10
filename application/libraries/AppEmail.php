@@ -21,6 +21,9 @@ class AppEmail extends MY_Controller {
     $this->mail->SMTPKeepAlive = true;
     $this->mail->Timeout = 5;
     $this->mail->SMTPDebug  = 0;
+    $this->mail->Username = 'customerservice@winbot7.com';
+    $this->mail->Password = 'w1nP@ss!';
+    $this->mail->From = 'customerservice@winbot7.com';
 
     $this->config = array(
       'mailtype' => 'html',
@@ -39,9 +42,7 @@ class AppEmail extends MY_Controller {
   public function system($message) {
     $this->mail->clearAddresses();
     $this->mail->addAddress('crubin@acquirgy.com');
-    $this->mail->Username = 'customerservice@winbot7.com';
-    $this->mail->Password = 'th4$M14kk!';
-    $this->mail->From = 'customerservice@winbot7.com';
+
     $this->mail->Subject = 'SYSTEM ERROR ' .  base_url();
     $message .= '<br /><br /><hr /><br />SERVER:<br /><pre>' . print_r($_SERVER,true);
     $message .= '<br /><br /><hr /><br />POST:<br /><pre>' . print_r($_POST,true);
@@ -52,10 +53,7 @@ class AppEmail extends MY_Controller {
 
   public function customer($params) {
     $this->mail->clearAddresses();
-    $this->mail->Username = 'customerservice@winbot7.com';
-    $this->mail->Password = 'th4$M14kk!';
     $this->mail->addAddress($params['to']);
-    $this->mail->From = 'customerservice@winbot7.com';
     $this->mail->Subject = $params['subject'];
     $this->mail->Body = $this->ci->load->view('front/main/confirmation_email', $params['data'], TRUE);
     echo $this->mail->Body; exit();
@@ -65,9 +63,6 @@ class AppEmail extends MY_Controller {
   public function admin($params) {
     $this->mail->clearAddresses();
     $this->mail->addAddress('opsnotification@acquirgy.com');
-    $this->mail->Username = 'customerservice@winbot7.com';
-    $this->mail->Password = 'th4$M14kk!';
-    $this->mail->From = 'customerservice@winbot7.com';
     $this->mail->Subject = $params['subject'];
     $params['view'] = isset($params['view']) ? $params['view'] : 'notification_admin';
     $this->mail->Body = $this->ci->load->view('admin/email/' . $params['view'], $params['data'], TRUE);
@@ -78,14 +73,8 @@ class AppEmail extends MY_Controller {
 
     public function fulfillment($message) {
     $this->mail->clearAddresses();
-    $this->mail->Username = 'customerservice@winbot7.com';
-    $this->mail->Password = 'th4$M14kk!';
-    // $this->mail->addAddress('cassandra@mfals.com');
-    // $this->mail->addAddress('hilda@mfals.com');
-    // $this->mail->addAddress('lindab@mfals.com');
     $this->mail->addAddress('crubin@acquirgy.com');
     $this->mail->addBCC('crubin@acquirgy.com');
-    $this->mail->From = 'customerservice@winbot7.com';
     $this->mail->Subject = 'Ecovacs File Submission for Web Orders';
     $this->mail->Body = $message;
     $this->mail->send();

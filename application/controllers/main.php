@@ -4,21 +4,15 @@ class Main extends MY_Controller {
 
   public function __construct() {
     parent::__construct();
-
   }
 
-  public function index() {
-
-  }
+  public function index() {}
 
   public function cart() {
-
     $this->data['products'] = $this->product_model->get_all();
     $this->data['upsells'] = $this->product_model->get_many_by(array('type' => 'upsell'));
-
     $this->data['$orders'] = $this->order_model->get_all();
     $this->data['$order_lines'] = $this->order_line_model->get_all();
-
   }
 
   public function submit() {
@@ -85,11 +79,29 @@ class Main extends MY_Controller {
       }
     }
 
-    $order = $this->order_model->get($order_id);
+    $order = $this->order_model->with('order_lines')->get($order_id);
+
+    $email = array(
+      'to' => $order['email'],
+      'subject' => special_characters('Your WINBOT Order Confirmation #' . $order['string_id']),
+      'data' => array('order' => $order)
+    );
+    $this->appemail->customer($email);
 
     redirect('/main/confirmation/' . $order['string_id']);
 
   }
+
+  public function confirmation($string_id = false) {
+    $order = $this->order_model->with('order_lines')->get_by(array('string_id' => $string_id));
+    if($order) {
+      $this->data['order'] = $order;
+     } else {
+       redirect('/');
+     }
+  }
+
+  // AJAX CALLS //
 
   public function get_pricing() {
 
@@ -98,28 +110,6 @@ class Main extends MY_Controller {
     $pricer = new Pricer();
     $pricing = $pricer->calculate($this->input->post());
     echo json_encode($pricing);
-
-  }
-
-  public function confirmation($string_id = false) {
-
-    $order = $this->order_model->with('order_lines')->get_by(array('string_id' => $string_id));
-
-    if($order) {
-
-      $email = array(
-        'to' => $order['email'],
-        'subject' => special_characters('Your WINBOT Order Confirmation #' . $order['string_id']),
-        'data' => array('order' => $order)
-      );
-
-      $this->data['order'] = $order;
-      $this->appemail->customer($email);
-      //exit();
-
-     } else {
-       redirect('/');
-     }
 
   }
 
